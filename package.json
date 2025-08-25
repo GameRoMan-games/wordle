@@ -1,0 +1,19 @@
+{
+  "name": "wordle",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "bunx astro build",
+    "deploy": "bunx wrangler deploy",
+    "dev": "bunx astro dev"
+  },
+  "dependencies": {
+    "solid-js": "^1.9.9",
+    "astro": "^5.13.3"
+  },
+  "devDependencies": {
+    "@astrojs/solid-js": "^5.1.0",
+    "wrangler": "^4.32.0",
+    "typescript": "^5.9.2"
+  }
+}
