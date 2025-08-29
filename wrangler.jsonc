@@ -1,0 +1,19 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+
+  "name": "wordle",
+  "compatibility_date": "2025-08-29",
+  "account_id": "9cb2e2e27c4416de8fa3465ed0ee8deb",
+
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "404-page"
+  },
+
+  "build": {
+    "command": "bun run build",
+    "cwd": "."
+  },
+
+  "observability": { "logs": { "enabled": true } }
+}
