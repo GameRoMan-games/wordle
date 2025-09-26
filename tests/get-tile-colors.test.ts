@@ -1,10 +1,7 @@
-import { getTileColors } from "~/lib/get-tile-colors"; // Assuming the helper is exported or you have a way to access it for testing
-import type { TileColor } from "~/types"; // Import your types
+import { getTileColors } from "~/lib/get-tile-colors";
+import type { TileColor } from "~/types";
 
 describe("getTileColors", () => {
-  // Mock CONFIG for testing purposes
-  const CONFIG = { wordLength: 5 };
-
   // Test case 1: All correct letters (green)
   test("should return all green for a perfect match", () => {
     const guess = "rebus";
@@ -40,11 +37,11 @@ describe("getTileColors", () => {
     const guess = "apple";
     const secret = "grape";
     const expectedColors: TileColor[] = [
-      "absent",
+      "present",
       "present",
       "absent",
       "present",
-      "absent",
+      "correct",
     ];
     // 'a' is absent, the first 'p' is present, second 'p' is absent, 'l' is absent, 'e' is absent
     expect(getTileColors(guess, secret)).toEqual(expectedColors);
@@ -72,8 +69,8 @@ describe("getTileColors", () => {
       "absent",
       "absent",
       "absent",
-      "absent",
-      "absent",
+      "present",
+      "present",
     ];
     expect(getTileColors(guess, secret)).toEqual(expectedColors);
   });
