@@ -2,8 +2,7 @@
   "$schema": "node_modules/wrangler/config-schema.json",
 
   "name": "wordle",
-  "compatibility_date": "2025-08-29",
-  "account_id": "1c22e9bb3369727e843e026d573e87f5",
+  "compatibility_date": "2025-09-24",
 
   "assets": {
     "directory": "./dist",
