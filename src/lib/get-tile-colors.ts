@@ -2,7 +2,7 @@ import { CONFIG } from "~/config";
 import type { TileColor } from "~/types";
 
 function getTileColors(guess: string, secret: string): TileColor[] {
-  const tileColors: TileColor[] = Array(CONFIG.wordLength).fill<TileColor>(
+  const tileColors: TileColor[] = Array<TileColor>(CONFIG.wordLength).fill(
     "absent"
   );
   const letterCounts = [...secret].reduce<Record<string, number>>(

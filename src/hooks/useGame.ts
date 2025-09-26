@@ -15,6 +15,7 @@ import type {
 import { WORDS, CONFIG } from "~/config";
 
 import { getGuessPattern } from "~/lib/get-guess-patern";
+import { getTileColors } from "~/lib/get-tile-colors";
 
 function getEmptyTiles(): TileInfo[] {
   const tiles: TileInfo[] = [];
@@ -160,12 +161,7 @@ export function useGame() {
   async function colorTiles() {
     const row = currentRow();
     const guess = guesses()[row]!.toLowerCase();
-    const letterCounts = [...secretword()].reduce<Record<string, number>>(
-      (res, char) => ((res[char] = (res[char] || 0) + 1), res),
-      {}
-    );
-
-    const tileColors = getTileColors(guess(), secretword());
+    const tileColors = getTileColors(guess, secretword());
 
     const newKeyColors: Record<string, KeyColor> = {};
     const flipPromises: Promise<void>[] = [];
@@ -357,7 +353,7 @@ export function useGame() {
     setCurrentRow(0);
     setCurrentTile(0);
 
-    setTiles(createTiles());
+    setTiles(getEmptyTiles());
 
     setGuesses([]);
     setKeycolors({});
