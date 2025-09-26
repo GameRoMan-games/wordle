@@ -1,7 +1,6 @@
 import { CONFIG } from "~/config";
 import type { TileColor } from "~/types";
 
-// Add this helper function inside the useGame() hook
 function getTileColors(guess: string, secret: string): TileColor[] {
   const tileColors: TileColor[] = Array(CONFIG.wordLength).fill("absent");
   const letterCounts = [...secret].reduce<Record<string, number>>(

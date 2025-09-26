@@ -42,7 +42,7 @@ export type Stats = {
 export type KeyName = "Enter" | "Submit" | "Delete" | (string & {});
 export type KeyColor = "correct" | "present" | "absent" | "";
 
-export type TileColor = KeyColor;
+export type TileColor = KeyColor & {};
 export type TileAnim = "flip" | "shake" | "pop" | "";
 
 export type TileInfo = {

@@ -107,9 +107,7 @@ export function useGame() {
 
   async function flipTile(
     tileIndex: number,
-    letter: string,
-    correctLetter: string,
-    letterCounts: Record<string, number>
+    color: TileColor
   ): Promise<TileColor> {
     setTiles((prev) => {
       const copy = [...prev];
@@ -118,20 +116,6 @@ export function useGame() {
     });
 
     await delay(FLIP_DELAY);
-
-    const color = (() => {
-      if (letter === correctLetter) {
-        letterCounts[letter]!--;
-        return "correct";
-      }
-
-      if (letterCounts[letter]! > 0) {
-        letterCounts[letter]!--;
-        return "present";
-      }
-
-      return "absent";
-    })();
 
     setTiles((prev) => {
       const copy = [...prev];
@@ -158,15 +142,24 @@ export function useGame() {
       const letter = guess[index]!;
       const correctLetter = secretword()[index]!;
 
+      const color: TileColor = (() => {
+        if (letter === correctLetter) {
+          letterCounts[letter]!--;
+          return "correct";
+        }
+
+        if (letterCounts[letter]! > 0) {
+          letterCounts[letter]!--;
+          return "present";
+        }
+
+        return "absent";
+      })();
+
       const p = (async () => {
         await delay(index * DELAY_BETWEEN_FLIPS);
 
-        const color = await flipTile(
-          tileIndex,
-          letter,
-          correctLetter,
-          letterCounts
-        );
+        await flipTile(tileIndex, color);
 
         const upper = letter.toUpperCase();
         const existing = newKeyColors[upper] || "";
@@ -236,40 +229,6 @@ export function useGame() {
       setCurrentRow(currentRow() + 1);
       setCurrentTile(0);
     }
-  }
-
-  function getGuessPattern() {
-    const pattern = [];
-
-    for (let row = 0; row <= currentRow(); row++) {
-      const rowPattern = [];
-
-      const guess = guesses()[row]!.toLowerCase();
-
-      const letterCounts = [...secretword()].reduce(
-        (res: { [key: string]: number }, char) => (
-          (res[char] = (res[char] || 0) + 1), res
-        ),
-        {}
-      );
-
-      for (let i = 0; i < CONFIG.wordLength; i++) {
-        const letter = guess[i]!;
-        if (letter === secretword()[i]) {
-          rowPattern.push("🟩");
-          letterCounts[letter]!--;
-        } else if (letterCounts[letter]! > 0) {
-          rowPattern.push("🟨");
-          letterCounts[letter]!--;
-        } else {
-          rowPattern.push("⬛");
-        }
-      }
-
-      pattern.push(rowPattern.join(""));
-    }
-
-    return pattern.join("\n");
   }
 
   function showSharePopup(isWin: boolean) {
