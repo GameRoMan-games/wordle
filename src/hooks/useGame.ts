@@ -136,33 +136,20 @@ export function useGame() {
       {}
     );
 
+    const tileColors = getTileColors(guess(), secretword());
+
     const newKeyColors: Record<string, KeyColor> = {};
     const flipPromises: Promise<void>[] = [];
 
     for (let index = 0; index < guess.length; index++) {
-      const tileIndex = row * CONFIG.wordLength + index;
-      const letter = guess[index]!;
-      const correctLetter = secretword()[index]!;
-
-      const color: TileColor = (() => {
-        if (letter === correctLetter) {
-          letterCounts[letter]!--;
-          return "correct";
-        }
-
-        if (letterCounts[letter]! > 0) {
-          letterCounts[letter]!--;
-          return "present";
-        }
-
-        return "absent";
-      })();
-
-      const p = (async () => {
+      const flipPromise = (async () => {
         await delay(index * DELAY_BETWEEN_FLIPS);
 
+        const tileIndex = row * CONFIG.wordLength + index;
+        const color: TileColor = tileColors[index]!;
         await flipTile(tileIndex, color);
 
+        const letter = guess[index]!;
         const upper = letter.toUpperCase();
         const existing = newKeyColors[upper] || "";
 
@@ -181,7 +168,7 @@ export function useGame() {
         newKeyColors[upper] = newKeyColor;
       })();
 
-      flipPromises.push(p);
+      flipPromises.push(flipPromise);
     }
 
     await Promise.all(flipPromises);
