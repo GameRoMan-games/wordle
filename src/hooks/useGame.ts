@@ -16,6 +16,18 @@ import { WORDS, CONFIG } from "~/config";
 
 import { getGuessPattern } from "~/lib/get-guess-patern";
 
+function getEmptyTiles(): TileInfo[] {
+  const tiles: TileInfo[] = [];
+
+  for (let i = 0; i < CONFIG.maxGuesses; i++) {
+    for (let j = 0; j < CONFIG.wordLength; j++) {
+      tiles.push({ letter: "", color: "", anim: "" });
+    }
+  }
+
+  return tiles;
+}
+
 export function useGame() {
   const [currentSection, setCurrentSection] =
     createSignal<CurrentSection>("game");
@@ -47,23 +59,40 @@ export function useGame() {
 
   const [keycolors, setKeycolors] = createSignal<Record<string, KeyColor>>({});
 
-  function createTiles(): TileInfo[] {
-    const tiles: TileInfo[] = [];
-
-    for (let i = 0; i < CONFIG.maxGuesses; i++) {
-      for (let j = 0; j < CONFIG.wordLength; j++) {
-        tiles.push({ letter: "", color: "", anim: "" });
-      }
-    }
-
-    return tiles;
-  }
-
-  const [tiles, setTiles] = createSignal<TileInfo[]>(createTiles());
+  const [tiles, setTiles] = createSignal<TileInfo[]>(getEmptyTiles());
 
   function saveData() {
-    localStorage.setItem("wordle-stats", JSON.stringify(stats()));
+    const WORDLE_STATS_KEY = "wordle-stats";
+    localStorage.setItem(WORDLE_STATS_KEY, JSON.stringify(stats()));
     localStorage.setItem("wordle-settings", JSON.stringify(settings()));
+  }
+
+  function loadData() {
+    const savedStats = localStorage.getItem("wordle-stats");
+
+    if (savedStats) {
+      setStats(JSON.parse(savedStats));
+    }
+
+    const savedSettings = localStorage.getItem("wordle-settings");
+
+    if (savedSettings) {
+      setSettings(JSON.parse(savedSettings));
+      updateThemeState();
+    }
+  }
+
+  function updateThemeState() {
+    document.body.classList.remove("dark-mode");
+
+    const theme = settings().theme;
+    const isSystemDark = window.matchMedia(
+      "(prefers-color-scheme: dark)"
+    ).matches;
+
+    if (theme === "dark" || (theme === "system" && isSystemDark)) {
+      document.body.classList.add("dark-mode");
+    }
   }
 
   function updateSettings(settings: Partial<Settings>) {
@@ -310,19 +339,6 @@ export function useGame() {
     }, 2000);
   }
 
-  function updateThemeState() {
-    document.body.classList.remove("dark-mode");
-
-    const theme = settings().theme;
-    const isSystemDark = window.matchMedia(
-      "(prefers-color-scheme: dark)"
-    ).matches;
-
-    if (theme === "dark" || (theme === "system" && isSystemDark)) {
-      document.body.classList.add("dark-mode");
-    }
-  }
-
   function getDailyWord() {
     const seed = CONFIG.seed;
     const today = new Date();
@@ -432,27 +448,28 @@ export function useGame() {
     setCurrentTile(currentTile() + 1);
   }
 
-  function loadData() {
-    const savedStats = localStorage.getItem("wordle-stats");
-
-    if (savedStats) {
-      setStats(JSON.parse(savedStats));
-    }
-
-    const savedSettings = localStorage.getItem("wordle-settings");
-
-    if (savedSettings) {
-      setSettings(JSON.parse(savedSettings));
-      updateThemeState();
-    }
-  }
-
-  function init() {
+  const initThemeWatcher = () => {
     window
       .matchMedia("(prefers-color-scheme: dark)")
       .addEventListener("change", () => {
         updateThemeState();
       });
+  };
+
+  const initKeyPressHandling = () => {
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        handleKeyPress("Enter");
+      } else if (event.key === "Backspace") {
+        handleKeyPress("Delete");
+      } else if (event.key.match(/^[a-zA-Z]$/)) {
+        handleKeyPress(event.key.toUpperCase());
+      }
+    });
+  };
+
+  function init() {
+    initThemeWatcher();
 
     // ----
 
@@ -463,15 +480,7 @@ export function useGame() {
 
     // ----
 
-    document.addEventListener("keydown", (event) => {
-      if (event.key === "Enter") {
-        handleKeyPress("Enter");
-      } else if (event.key === "Backspace") {
-        handleKeyPress("Delete");
-      } else if (event.key.match(/^[a-zA-Z]$/)) {
-        handleKeyPress(event.key.toUpperCase());
-      }
-    });
+    initKeyPressHandling();
   }
 
   return {
