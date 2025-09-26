@@ -1,9 +1,9 @@
 import { CONFIG } from "~/config";
 import type { TileColor } from "~/types";
 
-function getTileColors(guess: string, secret: string): TileColor[] {
-  const guess = guess.toLowerCase();
-  const secret = secret.toLowerCase();
+function getTileColors(guessWord: string, secretWord: string): TileColor[] {
+  const guess = guessWord.toLowerCase();
+  const secret = secretWord.toLowerCase();
 
   const tileColors: TileColor[] = Array<TileColor>(CONFIG.wordLength).fill(
     "absent"
