@@ -11,9 +11,9 @@ const id = "wordle";
 const title = "Wordle - Daily and Unlimited Word Puzzle Game";
 const canonical = `https://games.rman.dev/${id}`;
 const description = `Challenge yourself with Wordle, the addictive daily word puzzle. Enjoy unlimited games or a new daily challenge. Play now on ${canonical}`;
-const thumbnail = `/thumbnails/${id}.png`;
+const thumbnail = `/images/${id}.png`;
 ---
 
-<Layout {id} {title} {description} {canonical} {thumbnail}>
+<Layout {title} {description} {canonical} {thumbnail}>
   <Game client:load />
 </Layout>
