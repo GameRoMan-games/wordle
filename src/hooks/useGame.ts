@@ -14,6 +14,8 @@ import type {
 
 import { WORDS, CONFIG } from "~/config";
 
+import { getGuessPattern } from "~/lib/get-guess-patern";
+
 export function useGame() {
   const [currentSection, setCurrentSection] =
     createSignal<CurrentSection>("game");
@@ -232,7 +234,7 @@ export function useGame() {
   }
 
   function showSharePopup(isWin: boolean) {
-    const pattern = getGuessPattern();
+    const pattern = getGuessPattern(guesses(), secretword());
 
     const notification = document.createElement("div");
     notification.classList.add("notification", "game-over");

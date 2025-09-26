@@ -1,4 +1,4 @@
-// -- state --
+// #region State
 
 export type State = "loading" | "playing" | "gameover";
 
@@ -11,9 +11,9 @@ export type CurrentSection =
   | "stats"
   | "leaderboard";
 
-// -- state --
+// #endregion
 
-// -- settings --
+// #region Settings
 
 export type Theme = "dark" | "system" | "light";
 export type KeyboardLayout = "QWERTY" | "AZERTY";
@@ -25,9 +25,9 @@ export type Settings = {
   submitButtonType: SubmitButtonType;
 };
 
-// -- settings --
+// #endregion
 
-// -- stats --
+// #region Stats
 
 export type Stats = {
   gamesPlayed: number;
@@ -37,16 +37,25 @@ export type Stats = {
   guessDistribution: number[];
 };
 
-// -- stats --
+// #endregion
+
+// #region Keyboard
 
 export type KeyName = "Enter" | "Submit" | "Delete" | (string & {});
-export type KeyColor = "correct" | "present" | "absent" | "";
+export type KeyColor = "correct" | "present" | "absent";
+
+// #endregion
+
+// #region Board tiles
 
 export type TileColor = KeyColor & {};
+export type TileColorOrEmpty = KeyColor | "";
 export type TileAnim = "flip" | "shake" | "pop" | "";
 
 export type TileInfo = {
   letter: string;
-  color: TileColor;
+  color: TileColorOrEmpty;
   anim: TileAnim;
 };
+
+// #endregion

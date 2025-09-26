@@ -1,29 +1,21 @@
-import { CONFIG } from "~/config";
+import type { TileColor } from "~/types";
 
-function getGuessPattern(guesses: string[], secretWord: string) {
+import { getTileColors } from "./get-tile-colors";
+
+type PatternSymbol = "🟩" | "🟨" | "⬛";
+
+function getGuessPattern(guesses: string[], secretWord: string): string {
   const pattern: string[] = [];
 
+  const colorMap = {
+    absent: "⬛",
+    present: "🟨",
+    correct: "🟩",
+  } as const satisfies Record<TileColor, PatternSymbol>;
+
   for (const guess of guesses) {
-    const rowPattern: ("🟩" | "🟨" | "⬛")[] = [];
-
-    const letterCounts = [...secretWord].reduce<Record<string, number>>(
-      (res, char) => ((res[char] = (res[char] || 0) + 1), res),
-      {}
-    );
-
-    for (let i = 0; i < CONFIG.wordLength; i++) {
-      const letter = guess[i]!;
-      if (letter === secretWord[i]) {
-        rowPattern.push("🟩");
-        letterCounts[letter]!--;
-      } else if (letterCounts[letter]! > 0) {
-        rowPattern.push("🟨");
-        letterCounts[letter]!--;
-      } else {
-        rowPattern.push("⬛");
-      }
-    }
-
+    const colors = getTileColors(guess, secretWord);
+    const rowPattern: PatternSymbol[] = colors.map((color) => colorMap[color]);
     pattern.push(rowPattern.join(""));
   }
 

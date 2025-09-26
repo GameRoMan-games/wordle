@@ -5,8 +5,8 @@ import { describe, it, expect } from "bun:test";
 
 describe("getTileColors", () => {
   it("should return all green for a perfect match", () => {
-    const guess = "rebus";
-    const secret = "rebus";
+    const guess = "REBUS";
+    const secret = "REBUS";
     const expectedColors: TileColor[] = [
       "correct",
       "correct",
@@ -54,5 +54,20 @@ describe("getTileColors", () => {
       "present",
     ];
     expect(getTileColors(guess, secret)).toEqual(expectedColors);
+  });
+
+  it("should handle different caps correctly", () => {
+    const guess = "REBUS";
+    const secret = "REBUS";
+    const expectedColors: TileColor[] = [
+      "present",
+      "present",
+      "present",
+      "present",
+      "present",
+    ];
+    expect(getTileColors(guess, secret)).toEqual(expectedColors);
+    expect(getTileColors(guess.toLowerCase(), secret)).toEqual(expectedColors);
+    expect(getTileColors(guess, secret.toLowerCase())).toEqual(expectedColors);
   });
 });
