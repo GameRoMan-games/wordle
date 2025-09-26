@@ -4,7 +4,10 @@ import { getTileColors } from "./get-tile-colors";
 
 type PatternSymbol = "🟩" | "🟨" | "⬛";
 
-function getGuessPattern(guesses: string[], secretWord: string): string {
+function getGuessPattern(
+  guesses: readonly string[],
+  secretWord: string
+): string {
   const pattern: string[] = [];
 
   const colorMap = {

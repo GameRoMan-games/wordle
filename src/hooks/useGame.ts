@@ -62,20 +62,25 @@ export function useGame() {
 
   const [tiles, setTiles] = createSignal<TileInfo[]>(getEmptyTiles());
 
+  const STORAGE_WORDLE_STATS_KEY = "wordle-stats";
+  const STORAGE_WORDLE_SETTINGS_KEY = "wordle-settings";
+
   function saveData() {
-    const WORDLE_STATS_KEY = "wordle-stats";
-    localStorage.setItem(WORDLE_STATS_KEY, JSON.stringify(stats()));
-    localStorage.setItem("wordle-settings", JSON.stringify(settings()));
+    localStorage.setItem(STORAGE_WORDLE_STATS_KEY, JSON.stringify(stats()));
+    localStorage.setItem(
+      STORAGE_WORDLE_SETTINGS_KEY,
+      JSON.stringify(settings())
+    );
   }
 
   function loadData() {
-    const savedStats = localStorage.getItem("wordle-stats");
+    const savedStats = localStorage.getItem(STORAGE_WORDLE_STATS_KEY);
 
     if (savedStats) {
       setStats(JSON.parse(savedStats));
     }
 
-    const savedSettings = localStorage.getItem("wordle-settings");
+    const savedSettings = localStorage.getItem(STORAGE_WORDLE_SETTINGS_KEY);
 
     if (savedSettings) {
       setSettings(JSON.parse(savedSettings));
