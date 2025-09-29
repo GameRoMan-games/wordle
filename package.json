@@ -10,12 +10,11 @@
     "test:github": "bun test --reporter=junit --reporter-outfile=./bun.xml"
   },
   "dependencies": {
-    "@astrojs/solid-js": "^5.1.1",
     "solid-js": "^1.9.9",
     "astro": "^5.13.9"
   },
   "devDependencies": {
-    "@types/bun": "latest",
+    "@astrojs/solid-js": "^5.1.1",
     "wrangler": "^4.38.0",
     "typescript": "^5.9.2"
   }
