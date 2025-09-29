@@ -37,7 +37,7 @@ describe("getTileColors", () => {
       "present",
       "present",
       "absent",
-      "present",
+      "absent",
       "correct",
     ];
     expect(getTileColors(guess, secret)).toEqual(expectedColors);
@@ -60,11 +60,11 @@ describe("getTileColors", () => {
     const guess = "REBUS";
     const secret = "REBUS";
     const expectedColors: TileColor[] = [
-      "present",
-      "present",
-      "present",
-      "present",
-      "present",
+      "correct",
+      "correct",
+      "correct",
+      "correct",
+      "correct",
     ];
     expect(getTileColors(guess, secret)).toEqual(expectedColors);
     expect(getTileColors(guess.toLowerCase(), secret)).toEqual(expectedColors);
