@@ -14,6 +14,21 @@ import type {
 
 import { WORDS, CONFIG } from "~/config";
 
+import { getGuessPattern } from "~/lib/get-guess-patern";
+import { getTileColors } from "~/lib/get-tile-colors";
+
+function getEmptyTiles(): TileInfo[] {
+  const tiles: TileInfo[] = [];
+
+  for (let i = 0; i < CONFIG.maxGuesses; i++) {
+    for (let j = 0; j < CONFIG.wordLength; j++) {
+      tiles.push({ letter: "", color: "", anim: "" });
+    }
+  }
+
+  return tiles;
+}
+
 export function useGame() {
   const [currentSection, setCurrentSection] =
     createSignal<CurrentSection>("game");
@@ -45,23 +60,45 @@ export function useGame() {
 
   const [keycolors, setKeycolors] = createSignal<Record<string, KeyColor>>({});
 
-  function createTiles(): TileInfo[] {
-    const tiles: TileInfo[] = [];
+  const [tiles, setTiles] = createSignal<TileInfo[]>(getEmptyTiles());
 
-    for (let i = 0; i < CONFIG.maxGuesses; i++) {
-      for (let j = 0; j < CONFIG.wordLength; j++) {
-        tiles.push({ letter: "", color: "", anim: "" });
-      }
-    }
-
-    return tiles;
-  }
-
-  const [tiles, setTiles] = createSignal<TileInfo[]>(createTiles());
+  const STORAGE_WORDLE_STATS_KEY = "wordle-stats";
+  const STORAGE_WORDLE_SETTINGS_KEY = "wordle-settings";
 
   function saveData() {
-    localStorage.setItem("wordle-stats", JSON.stringify(stats()));
-    localStorage.setItem("wordle-settings", JSON.stringify(settings()));
+    localStorage.setItem(STORAGE_WORDLE_STATS_KEY, JSON.stringify(stats()));
+    localStorage.setItem(
+      STORAGE_WORDLE_SETTINGS_KEY,
+      JSON.stringify(settings())
+    );
+  }
+
+  function loadData() {
+    const savedStats = localStorage.getItem(STORAGE_WORDLE_STATS_KEY);
+
+    if (savedStats) {
+      setStats(JSON.parse(savedStats));
+    }
+
+    const savedSettings = localStorage.getItem(STORAGE_WORDLE_SETTINGS_KEY);
+
+    if (savedSettings) {
+      setSettings(JSON.parse(savedSettings));
+      updateThemeState();
+    }
+  }
+
+  function updateThemeState() {
+    document.body.classList.remove("dark-mode");
+
+    const theme = settings().theme;
+    const isSystemDark = window.matchMedia(
+      "(prefers-color-scheme: dark)"
+    ).matches;
+
+    if (theme === "dark" || (theme === "system" && isSystemDark)) {
+      document.body.classList.add("dark-mode");
+    }
   }
 
   function updateSettings(settings: Partial<Settings>) {
@@ -107,9 +144,7 @@ export function useGame() {
 
   async function flipTile(
     tileIndex: number,
-    letter: string,
-    correctLetter: string,
-    letterCounts: Record<string, number>
+    color: TileColor
   ): Promise<TileColor> {
     setTiles((prev) => {
       const copy = [...prev];
@@ -118,20 +153,6 @@ export function useGame() {
     });
 
     await delay(FLIP_DELAY);
-
-    const color = (() => {
-      if (letter === correctLetter) {
-        letterCounts[letter]!--;
-        return "correct";
-      }
-
-      if (letterCounts[letter]! > 0) {
-        letterCounts[letter]!--;
-        return "present";
-      }
-
-      return "absent";
-    })();
 
     setTiles((prev) => {
       const copy = [...prev];
@@ -145,29 +166,20 @@ export function useGame() {
   async function colorTiles() {
     const row = currentRow();
     const guess = guesses()[row]!.toLowerCase();
-    const letterCounts = [...secretword()].reduce<Record<string, number>>(
-      (res, char) => ((res[char] = (res[char] || 0) + 1), res),
-      {}
-    );
+    const tileColors = getTileColors(guess, secretword());
 
     const newKeyColors: Record<string, KeyColor> = {};
     const flipPromises: Promise<void>[] = [];
 
     for (let index = 0; index < guess.length; index++) {
-      const tileIndex = row * CONFIG.wordLength + index;
-      const letter = guess[index]!;
-      const correctLetter = secretword()[index]!;
-
-      const p = (async () => {
+      const flipPromise = (async () => {
         await delay(index * DELAY_BETWEEN_FLIPS);
 
-        const color = await flipTile(
-          tileIndex,
-          letter,
-          correctLetter,
-          letterCounts
-        );
+        const tileIndex = row * CONFIG.wordLength + index;
+        const color: TileColor = tileColors[index]!;
+        await flipTile(tileIndex, color);
 
+        const letter = guess[index]!;
         const upper = letter.toUpperCase();
         const existing = newKeyColors[upper] || "";
 
@@ -186,7 +198,7 @@ export function useGame() {
         newKeyColors[upper] = newKeyColor;
       })();
 
-      flipPromises.push(p);
+      flipPromises.push(flipPromise);
     }
 
     await Promise.all(flipPromises);
@@ -238,42 +250,8 @@ export function useGame() {
     }
   }
 
-  function getGuessPattern() {
-    const pattern = [];
-
-    for (let row = 0; row <= currentRow(); row++) {
-      const rowPattern = [];
-
-      const guess = guesses()[row]!.toLowerCase();
-
-      const letterCounts = [...secretword()].reduce(
-        (res: { [key: string]: number }, char) => (
-          (res[char] = (res[char] || 0) + 1), res
-        ),
-        {}
-      );
-
-      for (let i = 0; i < CONFIG.wordLength; i++) {
-        const letter = guess[i]!;
-        if (letter === secretword()[i]) {
-          rowPattern.push("🟩");
-          letterCounts[letter]!--;
-        } else if (letterCounts[letter]! > 0) {
-          rowPattern.push("🟨");
-          letterCounts[letter]!--;
-        } else {
-          rowPattern.push("⬛");
-        }
-      }
-
-      pattern.push(rowPattern.join(""));
-    }
-
-    return pattern.join("\n");
-  }
-
   function showSharePopup(isWin: boolean) {
-    const pattern = getGuessPattern();
+    const pattern = getGuessPattern(guesses(), secretword());
 
     const notification = document.createElement("div");
     notification.classList.add("notification", "game-over");
@@ -362,19 +340,6 @@ export function useGame() {
     }, 2000);
   }
 
-  function updateThemeState() {
-    document.body.classList.remove("dark-mode");
-
-    const theme = settings().theme;
-    const isSystemDark = window.matchMedia(
-      "(prefers-color-scheme: dark)"
-    ).matches;
-
-    if (theme === "dark" || (theme === "system" && isSystemDark)) {
-      document.body.classList.add("dark-mode");
-    }
-  }
-
   function getDailyWord() {
     const seed = CONFIG.seed;
     const today = new Date();
@@ -393,7 +358,7 @@ export function useGame() {
     setCurrentRow(0);
     setCurrentTile(0);
 
-    setTiles(createTiles());
+    setTiles(getEmptyTiles());
 
     setGuesses([]);
     setKeycolors({});
@@ -484,27 +449,28 @@ export function useGame() {
     setCurrentTile(currentTile() + 1);
   }
 
-  function loadData() {
-    const savedStats = localStorage.getItem("wordle-stats");
-
-    if (savedStats) {
-      setStats(JSON.parse(savedStats));
-    }
-
-    const savedSettings = localStorage.getItem("wordle-settings");
-
-    if (savedSettings) {
-      setSettings(JSON.parse(savedSettings));
-      updateThemeState();
-    }
-  }
-
-  function init() {
+  const initThemeWatcher = () => {
     window
       .matchMedia("(prefers-color-scheme: dark)")
       .addEventListener("change", () => {
         updateThemeState();
       });
+  };
+
+  const initKeyPressHandling = () => {
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        handleKeyPress("Enter");
+      } else if (event.key === "Backspace") {
+        handleKeyPress("Delete");
+      } else if (event.key.match(/^[a-zA-Z]$/)) {
+        handleKeyPress(event.key.toUpperCase());
+      }
+    });
+  };
+
+  function init() {
+    initThemeWatcher();
 
     // ----
 
@@ -515,15 +481,7 @@ export function useGame() {
 
     // ----
 
-    document.addEventListener("keydown", (event) => {
-      if (event.key === "Enter") {
-        handleKeyPress("Enter");
-      } else if (event.key === "Backspace") {
-        handleKeyPress("Delete");
-      } else if (event.key.match(/^[a-zA-Z]$/)) {
-        handleKeyPress(event.key.toUpperCase());
-      }
-    });
+    initKeyPressHandling();
   }
 
   return {

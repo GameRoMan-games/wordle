@@ -5,7 +5,9 @@
   "scripts": {
     "build": "bunx astro build",
     "deploy": "bunx wrangler deploy",
-    "dev": "bunx astro dev"
+    "dev": "bunx astro dev",
+    "test": "bun test",
+    "test:github": "bun test --reporter=junit --reporter-outfile=./bun.xml"
   },
   "dependencies": {
     "solid-js": "^1.9.9",
