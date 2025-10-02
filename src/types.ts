@@ -43,13 +43,14 @@ export type Stats = {
 
 export type KeyName = "Enter" | "Submit" | "Delete" | (string & {});
 export type KeyColor = "correct" | "present" | "absent";
+export type KeyColorOrNotColored = KeyColor | "";
 
 // #endregion
 
 // #region Board tiles
 
 export type TileColor = KeyColor & {};
-export type TileColorOrEmpty = KeyColor | "";
+export type TileColorOrEmpty = TileColor | "";
 export type TileAnim = "flip" | "shake" | "pop" | "";
 
 export type TileInfo = {

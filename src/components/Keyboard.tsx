@@ -2,14 +2,19 @@ import { For } from "solid-js";
 
 import { CONFIG } from "~/config";
 
-import type { KeyColor, Settings, KeyName } from "~/types";
+import type {
+  KeyColor,
+  KeyColorOrNotColored,
+  Settings,
+  KeyName,
+} from "~/types";
 
 const KeyboardButton = (props: {
   name: KeyName;
   label?: string;
   width?: number;
   height?: number;
-  color?: KeyColor;
+  color?: KeyColorOrNotColored;
   onClick: () => void;
 }) => {
   const width: number = props.width ?? 1;
@@ -17,7 +22,7 @@ const KeyboardButton = (props: {
 
   const label: string = props.label ?? props.name;
 
-  const color: KeyColor = props.color ?? "";
+  const color: KeyColorOrNotColored = props.color ?? "";
 
   return (
     <button
