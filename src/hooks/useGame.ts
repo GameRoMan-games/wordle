@@ -1,4 +1,4 @@
-import { createSignal } from "solid-js";
+import { createSignal, batch } from "solid-js";
 
 import type {
   CurrentSection,
@@ -10,12 +10,14 @@ import type {
   KeyColor,
   TileColor,
   TileInfo,
+  Theme,
 } from "~/types";
 
 import { WORDS, CONFIG } from "~/config";
 
 import { getGuessPattern } from "~/lib/get-guess-patern";
 import { getTileColors } from "~/lib/get-tile-colors";
+import { showNotification } from "~/lib/show-notification";
 
 function getEmptyTiles(): TileInfo[] {
   const tiles: TileInfo[] = [];
@@ -30,9 +32,6 @@ function getEmptyTiles(): TileInfo[] {
 }
 
 export function useGame() {
-  const [currentSection, setCurrentSection] =
-    createSignal<CurrentSection>("game");
-
   const [stats, setStats] = createSignal<Stats>({
     gamesPlayed: 0,
     gamesWon: 0,
@@ -47,16 +46,18 @@ export function useGame() {
     submitButtonType: "ENTER",
   });
 
-  const [gamemode, setGamemode] = createSignal<GameMode | null>(null);
+  const [getState, setState] = createSignal<State>("loading");
+  const [getGameMode, setGameMode] = createSignal<GameMode | null>(null);
 
-  const [state, setState] = createSignal<State>("loading");
+  const [currentSection, setCurrentSection] =
+    createSignal<CurrentSection>("game");
 
-  const [secretword, setSecretword] = createSignal<string>("");
+  const [getSecretWord, setSecretWord] = createSignal<string>("");
 
-  const [currentRow, setCurrentRow] = createSignal<number>(0);
+  const [getCurrentRow, setCurrentRow] = createSignal<number>(0);
   const [currentTile, setCurrentTile] = createSignal<number>(0);
 
-  const [guesses, setGuesses] = createSignal<string[]>([]);
+  const [getGuesses, setGuesses] = createSignal<string[]>([]);
 
   const [keycolors, setKeycolors] = createSignal<Record<string, KeyColor>>({});
 
@@ -65,7 +66,7 @@ export function useGame() {
   const STORAGE_WORDLE_STATS_KEY = "wordle-stats";
   const STORAGE_WORDLE_SETTINGS_KEY = "wordle-settings";
 
-  function saveData() {
+  function saveLocalData() {
     localStorage.setItem(STORAGE_WORDLE_STATS_KEY, JSON.stringify(stats()));
     localStorage.setItem(
       STORAGE_WORDLE_SETTINGS_KEY,
@@ -73,25 +74,25 @@ export function useGame() {
     );
   }
 
-  function loadData() {
+  function loadLocalData() {
     const savedStats = localStorage.getItem(STORAGE_WORDLE_STATS_KEY);
 
     if (savedStats) {
-      setStats(JSON.parse(savedStats));
+      const parsedStats = JSON.parse(savedStats);
+      setStats(parsedStats);
     }
 
     const savedSettings = localStorage.getItem(STORAGE_WORDLE_SETTINGS_KEY);
 
     if (savedSettings) {
-      setSettings(JSON.parse(savedSettings));
-      updateThemeState();
+      const parsedSettings = JSON.parse(savedSettings);
+      setSettings(parsedSettings);
+      updateThemeState(parsedSettings.theme);
     }
   }
 
-  function updateThemeState() {
+  function updateThemeState(theme: Theme) {
     document.body.classList.remove("dark-mode");
-
-    const theme = settings().theme;
     const isSystemDark = window.matchMedia(
       "(prefers-color-scheme: dark)"
     ).matches;
@@ -103,12 +104,13 @@ export function useGame() {
 
   function updateSettings(settings: Partial<Settings>) {
     setSettings((prev) => ({ ...prev, ...settings }));
-    updateThemeState();
-    saveData();
+    updateThemeState(settings().theme);
+    saveLocalData();
   }
 
   function updateStats(won: boolean) {
-    setStats({ ...stats(), gamesPlayed: stats().gamesPlayed + 1 });
+    const gamesPlayed = stats().gamesPlayed + 1;
+    setStats({ ...stats(), gamesPlayed });
 
     if (!won) {
       setStats({ ...stats(), currentStreak: 0 });
@@ -116,7 +118,7 @@ export function useGame() {
     }
 
     const guessDistribution = window.structuredClone(stats().guessDistribution);
-    guessDistribution[currentRow()]!++;
+    guessDistribution[getCurrentRow()]!++;
 
     setStats({
       ...stats(),
@@ -129,11 +131,13 @@ export function useGame() {
 
   function finishGame(won: boolean) {
     setState("gameover");
-
-    showSharePopup(won);
     updateStats(won);
-
-    saveData();
+    saveLocalData();
+    showSharePopup({
+      isWin: won,
+      guesses: getGuesses(),
+      secretWord: getSecretWord(),
+    });
   }
 
   const FLIP_DELAY = 250;
@@ -164,9 +168,9 @@ export function useGame() {
   }
 
   async function colorTiles() {
-    const row = currentRow();
-    const guess = guesses()[row]!.toLowerCase();
-    const tileColors = getTileColors(guess, secretword());
+    const row = getCurrentRow();
+    const guess = getGuesses()[row]!.toLowerCase();
+    const tileColors = getTileColors(guess, getSecretWord());
 
     const newKeyColors: Record<string, KeyColor> = {};
     const flipPromises: Promise<void>[] = [];
@@ -207,7 +211,7 @@ export function useGame() {
   }
 
   function shakeRow() {
-    const start = currentRow() * CONFIG.wordLength;
+    const start = getCurrentRow() * CONFIG.wordLength;
     const end = start + CONFIG.wordLength;
 
     setTiles((prev) => {
@@ -230,7 +234,7 @@ export function useGame() {
   }
 
   function submitGuess() {
-    const guess = guesses()[currentRow()]!.toLowerCase();
+    const guess = getGuesses()[getCurrentRow()]!.toLowerCase();
 
     if (!WORDS.guesses.includes(guess)) {
       shakeRow();
@@ -240,18 +244,27 @@ export function useGame() {
 
     colorTiles();
 
-    if (guess === secretword()) {
+    if (guess === getSecretWord()) {
       finishGame(true);
-    } else if (currentRow() === CONFIG.maxGuesses - 1) {
+    } else if (getCurrentRow() === CONFIG.maxGuesses - 1) {
       finishGame(false);
     } else {
-      setCurrentRow(currentRow() + 1);
+      setCurrentRow(getCurrentRow() + 1);
       setCurrentTile(0);
     }
   }
 
-  function showSharePopup(isWin: boolean) {
-    const pattern = getGuessPattern(guesses(), secretword());
+  function showSharePopup({
+    isWin,
+    guesses,
+    secretWord,
+  }: {
+    isWin: boolean;
+    guesses: string[];
+    secretWord: string;
+  }) {
+    const pattern = getGuessPattern(guesses, secretWord);
+    const attempts = getCurrentRow() + 1;
 
     const notification = document.createElement("div");
     notification.classList.add("notification", "game-over");
@@ -259,7 +272,7 @@ export function useGame() {
     const title = document.createElement("div");
     title.textContent = isWin
       ? "Congratulations!"
-      : `Game Over! The word was ${secretword().toUpperCase()}`;
+      : `Game Over! The word was ${secretWord.toUpperCase()}`;
     title.style.fontSize = "1.5rem";
     title.style.marginBottom = "15px";
     notification.appendChild(title);
@@ -278,7 +291,7 @@ export function useGame() {
       const shareText = `${
         isWin ? "I guessed" : "I did not guess"
       } a word in Wordle${
-        isWin ? ` in ${currentRow() + 1} attempts` : ""
+        isWin ? ` in ${attempts} attempts` : ""
       }\n\n${pattern}\n\nPlay on ${window.location.href}`;
 
       navigator.clipboard
@@ -311,33 +324,15 @@ export function useGame() {
     }, 100);
   }
 
-  let notificationTimeoutId: number | undefined | null;
+  function getNewWord(gameMode: GameMode) {
+    const newWord = gameMode === "daily" ? getDailyWord() : getRandomWord();
+    return newWord;
+  }
 
-  function showNotification(message: string) {
-    if (notificationTimeoutId) {
-      window.clearTimeout(notificationTimeoutId);
-      const existingNotification = document.querySelector(".notification");
-      if (existingNotification) {
-        existingNotification.remove();
-      }
-    }
-
-    const notification = document.createElement("div");
-    notification.textContent = message;
-    notification.classList.add("notification");
-    document.body.appendChild(notification);
-
-    window.setTimeout(() => {
-      notification.classList.add("show");
-    }, 100);
-
-    notificationTimeoutId = window.setTimeout(() => {
-      notification.classList.remove("show");
-      window.setTimeout(() => {
-        notification.remove();
-        notificationTimeoutId = null;
-      }, 300);
-    }, 2000);
+  function getRandomWord(): string {
+    const randomIndex = Math.floor(Math.random() * WORDS.answers.length);
+    const randomWord = WORDS.answers[randomIndex]!;
+    return randomWord;
   }
 
   function getDailyWord() {
@@ -351,27 +346,21 @@ export function useGame() {
   }
 
   function initializeGame(gameMode: GameMode = "unlimited") {
-    setGamemode(gameMode);
+    batch(() => {
+      setState("playing");
+      setGameMode(gameMode);
 
-    setState("playing");
+      setCurrentRow(0);
+      setCurrentTile(0);
 
-    setCurrentRow(0);
-    setCurrentTile(0);
+      setTiles(getEmptyTiles());
 
-    setTiles(getEmptyTiles());
+      setGuesses([]);
+      setKeycolors({});
 
-    setGuesses([]);
-    setKeycolors({});
-
-    if (gameMode === "daily") {
-      setSecretword(getDailyWord());
-    } else if (gameMode === "unlimited") {
-      const randomIndex = Math.floor(Math.random() * WORDS.answers.length);
-      const randowWord = WORDS.answers[randomIndex]!;
-      setSecretword(randowWord);
-    }
-
-    setCurrentSection("game");
+      setSecretWord(getNewWord(gameMode));
+      setCurrentSection("game");
+    });
   }
 
   async function fetchWords() {
@@ -393,11 +382,11 @@ export function useGame() {
       console.error("Error fetching words:", error);
     }
 
-    initializeGame("daily");
+    return WORDS;
   }
 
   function handleKeyPress(key: KeyName) {
-    if (state() === "gameover") return;
+    if (getState() === "gameover") return;
 
     if (key === "Enter" || key === "Submit") {
       if (currentTile() !== CONFIG.wordLength) return;
@@ -408,7 +397,8 @@ export function useGame() {
     if (key === "Delete") {
       if (currentTile() === 0) return;
 
-      const tileIndex = currentRow() * CONFIG.wordLength + (currentTile() - 1);
+      const tileIndex =
+        getCurrentRow() * CONFIG.wordLength + (currentTile() - 1);
 
       setTiles((prev) => {
         const copy = [...prev];
@@ -416,9 +406,9 @@ export function useGame() {
         return copy;
       });
 
-      const guesses_ = window.structuredClone(guesses());
-      guesses_[currentRow()] = guesses_[currentRow()]!.slice(0, -1);
-      setGuesses(guesses_);
+      const guesses = window.structuredClone(getGuesses());
+      guesses[getCurrentRow()] = guesses[getCurrentRow()]!.slice(0, -1);
+      setGuesses(guesses);
 
       setCurrentTile(currentTile() - 1);
       return;
@@ -426,7 +416,7 @@ export function useGame() {
 
     if (currentTile() >= CONFIG.wordLength) return;
 
-    const tileIndex = currentRow() * CONFIG.wordLength + currentTile();
+    const tileIndex = getCurrentRow() * CONFIG.wordLength + currentTile();
 
     setTiles((prev) => {
       const copy = [...prev];
@@ -442,9 +432,9 @@ export function useGame() {
       });
     }, 150);
 
-    const guesses_ = window.structuredClone(guesses());
-    guesses_[currentRow()] = (guesses_[currentRow()] || "") + key;
-    setGuesses(guesses_);
+    const guesses = window.structuredClone(getGuesses());
+    guesses[getCurrentRow()] = (guesses[getCurrentRow()] || "") + key;
+    setGuesses(guesses);
 
     setCurrentTile(currentTile() + 1);
   }
@@ -472,12 +462,10 @@ export function useGame() {
   function init() {
     initThemeWatcher();
 
-    // ----
-
-    loadData();
+    loadLocalData();
     updateThemeState();
 
-    fetchWords();
+    fetchWords().then(() => initializeGame("daily"));
 
     // ----
 
@@ -485,9 +473,9 @@ export function useGame() {
   }
 
   return {
-    state,
+    getState,
 
-    gamemode,
+    getGameMode,
 
     currentSection,
     setCurrentSection,

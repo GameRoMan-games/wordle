@@ -12,9 +12,9 @@ import LeaderboardContainer from "./LeaderboardContainer";
 
 function App() {
   const {
-    state,
+    getState,
 
-    gamemode,
+    getGamemode,
 
     currentSection,
     setCurrentSection,
@@ -50,13 +50,13 @@ function App() {
 
         <Match when={currentSection() === "game"}>
           <GameContainer
-            gamemode={gamemode() ?? "unlimited"}
+            gamemode={getGamemode() ?? "unlimited"}
             settings={settings()}
             initializeGame={initializeGame}
             tiles={tiles()}
             keycolors={keycolors()}
             handleKeyPress={handleKeyPress}
-            state={state()}
+            state={getState()}
           />
         </Match>
 
