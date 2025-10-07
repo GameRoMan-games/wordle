@@ -1,4 +1,4 @@
-import { createSignal, batch } from "solid-js";
+import { createSignal, batch, Accessor } from "solid-js";
 
 import type {
   CurrentSection,
@@ -18,33 +18,116 @@ import { WORDS, CONFIG } from "~/config";
 import { getGuessPattern } from "~/lib/get-guess-patern";
 import { getTileColors } from "~/lib/get-tile-colors";
 import { showNotification } from "~/lib/show-notification";
+import { createLocalStorageSignal } from "~/lib/create-local-storage-signal";
+import { updateThemeState } from "~/lib/update-theme-state";
+
+function showSharePopup({
+  isWin,
+  guesses,
+  secretWord,
+}: {
+  isWin: boolean;
+  guesses: string[];
+  secretWord: string;
+  attempts: number;
+}) {
+  const pattern = getGuessPattern(guesses, secretWord);
+
+  const notification = document.createElement("div");
+  notification.classList.add("notification", "game-over");
+
+  const title = document.createElement("div");
+  title.textContent = isWin
+    ? "Congratulations!"
+    : `Game Over! The word was ${secretWord.toUpperCase()}`;
+  title.style.fontSize = "1.5rem";
+  title.style.marginBottom = "15px";
+  notification.appendChild(title);
+
+  const patternDisplay = document.createElement("pre");
+  patternDisplay.textContent = pattern;
+  patternDisplay.style.fontFamily = "monospace";
+  patternDisplay.style.margin = "15px 0";
+  notification.appendChild(patternDisplay);
+
+  const shareButton = document.createElement("button");
+  shareButton.textContent = "Share";
+  shareButton.classList.add("content-button");
+  shareButton.style.margin = "10px 0";
+  shareButton.addEventListener("click", () => {
+    const topText = isWin
+      ? `I guessed a word in Wordle in ${attempts} attempts`
+      : `I did not guess a word in Wordle`;
+    const shareText = `${topText}\n\n${pattern}\n\nPlay on ${window.location.href}`;
+
+    navigator.clipboard
+      .writeText(shareText)
+      .then(() => {
+        showNotification("Copied to clipboard!");
+      })
+      .catch(() => {
+        showNotification("Failed to copy to clipboard");
+      });
+  });
+
+  notification.appendChild(shareButton);
+
+  const closeButton = document.createElement("button");
+  closeButton.textContent = "×";
+  closeButton.classList.add("notification-close");
+  closeButton.addEventListener("click", () => {
+    notification.classList.remove("show");
+    window.setTimeout(() => {
+      notification.remove();
+    }, 300);
+  });
+
+  notification.appendChild(closeButton);
+  document.body.appendChild(notification);
+
+  window.setTimeout(() => {
+    notification.classList.add("show");
+  }, 100);
+}
+
+function getArrayFullOf<T, Length extends number>(
+  item: T,
+  { length }: { length: Length }
+): T[] {
+  return Array.from({ length }, () => window.structuredClone(item));
+}
 
 function getEmptyTiles(): TileInfo[] {
-  const tiles: TileInfo[] = [];
-
-  for (let i = 0; i < CONFIG.maxGuesses; i++) {
-    for (let j = 0; j < CONFIG.wordLength; j++) {
-      tiles.push({ letter: "", color: "", anim: "" });
-    }
-  }
+  const tiles = getArrayFullOf<TileInfo>(
+    { letter: "", color: "", anim: "" },
+    { length: CONFIG.maxGuesses * CONFIG.wordLength }
+  );
 
   return tiles;
 }
 
 export function useGame() {
-  const [stats, setStats] = createSignal<Stats>({
-    gamesPlayed: 0,
-    gamesWon: 0,
-    currentStreak: 0,
-    maxStreak: 0,
-    guessDistribution: [0, 0, 0, 0, 0, 0],
-  });
+  const STORAGE_WORDLE_STATS_KEY = "wordle-stats";
+  const [stats, setStats] = createLocalStorageSignal<Stats>(
+    STORAGE_WORDLE_STATS_KEY,
+    {
+      gamesPlayed: 0,
+      gamesWon: 0,
+      currentStreak: 0,
+      maxStreak: 0,
+      guessDistribution: [0, 0, 0, 0, 0, 0],
+    }
+  );
 
-  const [settings, setSettings] = createSignal<Settings>({
-    theme: "system",
-    keyboardLayout: "QWERTY",
-    submitButtonType: "ENTER",
-  });
+  const STORAGE_WORDLE_SETTINGS_KEY = "wordle-settings";
+  const [getSettings, setSettings] = createLocalStorageSignal<Settings>(
+    STORAGE_WORDLE_SETTINGS_KEY,
+    {
+      theme: "system",
+      keyboardLayout: "QWERTY",
+      submitButtonType: "ENTER",
+    }
+  );
 
   const [getState, setState] = createSignal<State>("loading");
   const [getGameMode, setGameMode] = createSignal<GameMode | null>(null);
@@ -63,57 +146,16 @@ export function useGame() {
 
   const [tiles, setTiles] = createSignal<TileInfo[]>(getEmptyTiles());
 
-  const STORAGE_WORDLE_STATS_KEY = "wordle-stats";
-  const STORAGE_WORDLE_SETTINGS_KEY = "wordle-settings";
-
-  function saveLocalData() {
-    localStorage.setItem(STORAGE_WORDLE_STATS_KEY, JSON.stringify(stats()));
-    localStorage.setItem(
-      STORAGE_WORDLE_SETTINGS_KEY,
-      JSON.stringify(settings())
-    );
-  }
-
-  function loadLocalData() {
-    const savedStats = localStorage.getItem(STORAGE_WORDLE_STATS_KEY);
-
-    if (savedStats) {
-      const parsedStats = JSON.parse(savedStats);
-      setStats(parsedStats);
-    }
-
-    const savedSettings = localStorage.getItem(STORAGE_WORDLE_SETTINGS_KEY);
-
-    if (savedSettings) {
-      const parsedSettings = JSON.parse(savedSettings);
-      setSettings(parsedSettings);
-      updateThemeState(parsedSettings.theme);
-    }
-  }
-
-  function updateThemeState(theme: Theme) {
-    document.body.classList.remove("dark-mode");
-    const isSystemDark = window.matchMedia(
-      "(prefers-color-scheme: dark)"
-    ).matches;
-
-    if (theme === "dark" || (theme === "system" && isSystemDark)) {
-      document.body.classList.add("dark-mode");
-    }
-  }
-
   function updateSettings(settings: Partial<Settings>) {
     setSettings((prev) => ({ ...prev, ...settings }));
-    updateThemeState(settings().theme);
-    saveLocalData();
+    updateThemeState(getSettings().theme);
   }
 
-  function updateStats(won: boolean) {
+  function updateStats(isWin: boolean) {
     const gamesPlayed = stats().gamesPlayed + 1;
-    setStats({ ...stats(), gamesPlayed });
 
-    if (!won) {
-      setStats({ ...stats(), currentStreak: 0 });
+    if (!isWin) {
+      setStats({ ...stats(), gamesPlayed, currentStreak: 0 });
       return;
     }
 
@@ -122,6 +164,7 @@ export function useGame() {
 
     setStats({
       ...stats(),
+      gamesPlayed,
       gamesWon: stats().gamesWon + 1,
       currentStreak: stats().currentStreak + 1,
       maxStreak: Math.max(stats().maxStreak, stats().currentStreak),
@@ -129,14 +172,14 @@ export function useGame() {
     });
   }
 
-  function finishGame(won: boolean) {
+  function finishGame(isWin: boolean) {
     setState("gameover");
-    updateStats(won);
-    saveLocalData();
+    updateStats(isWin);
     showSharePopup({
-      isWin: won,
+      isWin,
       guesses: getGuesses(),
       secretWord: getSecretWord(),
+      attempts: getCurrentRow() + 1,
     });
   }
 
@@ -254,76 +297,6 @@ export function useGame() {
     }
   }
 
-  function showSharePopup({
-    isWin,
-    guesses,
-    secretWord,
-  }: {
-    isWin: boolean;
-    guesses: string[];
-    secretWord: string;
-  }) {
-    const pattern = getGuessPattern(guesses, secretWord);
-    const attempts = getCurrentRow() + 1;
-
-    const notification = document.createElement("div");
-    notification.classList.add("notification", "game-over");
-
-    const title = document.createElement("div");
-    title.textContent = isWin
-      ? "Congratulations!"
-      : `Game Over! The word was ${secretWord.toUpperCase()}`;
-    title.style.fontSize = "1.5rem";
-    title.style.marginBottom = "15px";
-    notification.appendChild(title);
-
-    const patternDisplay = document.createElement("pre");
-    patternDisplay.textContent = pattern;
-    patternDisplay.style.fontFamily = "monospace";
-    patternDisplay.style.margin = "15px 0";
-    notification.appendChild(patternDisplay);
-
-    const shareButton = document.createElement("button");
-    shareButton.textContent = "Share";
-    shareButton.classList.add("content-button");
-    shareButton.style.margin = "10px 0";
-    shareButton.addEventListener("click", () => {
-      const shareText = `${
-        isWin ? "I guessed" : "I did not guess"
-      } a word in Wordle${
-        isWin ? ` in ${attempts} attempts` : ""
-      }\n\n${pattern}\n\nPlay on ${window.location.href}`;
-
-      navigator.clipboard
-        .writeText(shareText)
-        .then(() => {
-          showNotification("Copied to clipboard!");
-        })
-        .catch(() => {
-          showNotification("Failed to copy to clipboard");
-        });
-    });
-
-    notification.appendChild(shareButton);
-
-    const closeButton = document.createElement("button");
-    closeButton.textContent = "×";
-    closeButton.classList.add("notification-close");
-    closeButton.addEventListener("click", () => {
-      notification.classList.remove("show");
-      window.setTimeout(() => {
-        notification.remove();
-      }, 300);
-    });
-
-    notification.appendChild(closeButton);
-    document.body.appendChild(notification);
-
-    window.setTimeout(() => {
-      notification.classList.add("show");
-    }, 100);
-  }
-
   function getNewWord(gameMode: GameMode) {
     const newWord = gameMode === "daily" ? getDailyWord() : getRandomWord();
     return newWord;
@@ -439,11 +412,12 @@ export function useGame() {
     setCurrentTile(currentTile() + 1);
   }
 
-  const initThemeWatcher = () => {
+  const initThemeWatcher = (getTheme: Accessor<Theme>) => {
+    const theme = getTheme();
     window
       .matchMedia("(prefers-color-scheme: dark)")
       .addEventListener("change", () => {
-        updateThemeState();
+        updateThemeState(theme);
       });
   };
 
@@ -460,15 +434,8 @@ export function useGame() {
   };
 
   function init() {
-    initThemeWatcher();
-
-    loadLocalData();
-    updateThemeState();
-
+    initThemeWatcher(() => getSettings().theme);
     fetchWords().then(() => initializeGame("daily"));
-
-    // ----
-
     initKeyPressHandling();
   }
 
@@ -481,8 +448,8 @@ export function useGame() {
     setCurrentSection,
 
     stats,
-    settings,
 
+    getSettings,
     updateSettings,
 
     tiles,

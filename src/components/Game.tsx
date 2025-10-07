@@ -14,14 +14,14 @@ function App() {
   const {
     getState,
 
-    getGamemode,
+    getGameMode,
 
     currentSection,
     setCurrentSection,
 
     stats,
-    settings,
 
+    getSettings,
     updateSettings,
 
     tiles,
@@ -50,8 +50,8 @@ function App() {
 
         <Match when={currentSection() === "game"}>
           <GameContainer
-            gamemode={getGamemode() ?? "unlimited"}
-            settings={settings()}
+            gamemode={getGameMode() ?? "unlimited"}
+            settings={getSettings()}
             initializeGame={initializeGame}
             tiles={tiles()}
             keycolors={keycolors()}
@@ -66,7 +66,7 @@ function App() {
 
         <Match when={currentSection() === "settings"}>
           <SettingsContainer
-            settings={settings()}
+            settings={getSettings()}
             updateSettings={updateSettings}
           />
         </Match>
