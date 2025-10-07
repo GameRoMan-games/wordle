@@ -1,4 +1,4 @@
-import { createSignal, Setter, Signal } from "solid-js";
+import { createSignal, type Setter, type Signal } from "solid-js";
 
 /**
  * Creates a signal that persists its value to localStorage and initializes
@@ -6,7 +6,7 @@ import { createSignal, Setter, Signal } from "solid-js";
  *
  * @param key The key to use in localStorage.
  * @param initialValue The default value if no item is found in localStorage.
- * @returns [getter, setter] SolidJS signal accessors.
+ * @returns `[getter, setter]` SolidJS signal accessors.
  */
 export function createLocalStorageSignal<T>(
   key: string,

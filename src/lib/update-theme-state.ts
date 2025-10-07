@@ -1,4 +1,4 @@
-import { Theme } from "~/types";
+import type { Theme } from "~/types";
 
 export function updateThemeState(theme: Theme) {
   const isSystemDark = window.matchMedia(

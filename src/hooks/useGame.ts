@@ -1,4 +1,4 @@
-import { createSignal, batch, Accessor } from "solid-js";
+import { createSignal, batch, type Accessor } from "solid-js";
 
 import type {
   CurrentSection,
@@ -15,82 +15,21 @@ import type {
 
 import { WORDS, CONFIG } from "~/config";
 
-import { getGuessPattern } from "~/lib/get-guess-patern";
 import { getTileColors } from "~/lib/get-tile-colors";
 import { showNotification } from "~/lib/show-notification";
 import { createLocalStorageSignal } from "~/lib/create-local-storage-signal";
 import { updateThemeState } from "~/lib/update-theme-state";
+import { showSharePopup } from "~/lib/show-share-popup";
 
-function showSharePopup({
-  isWin,
-  guesses,
-  secretWord,
-}: {
-  isWin: boolean;
-  guesses: string[];
-  secretWord: string;
-  attempts: number;
-}) {
-  const pattern = getGuessPattern(guesses, secretWord);
+const EMPTY_STATS_STATE: Stats = {
+  gamesPlayed: 0,
+  gamesWon: 0,
+  currentStreak: 0,
+  maxStreak: 0,
+  guessDistribution: [0, 0, 0, 0, 0, 0],
+};
 
-  const notification = document.createElement("div");
-  notification.classList.add("notification", "game-over");
-
-  const title = document.createElement("div");
-  title.textContent = isWin
-    ? "Congratulations!"
-    : `Game Over! The word was ${secretWord.toUpperCase()}`;
-  title.style.fontSize = "1.5rem";
-  title.style.marginBottom = "15px";
-  notification.appendChild(title);
-
-  const patternDisplay = document.createElement("pre");
-  patternDisplay.textContent = pattern;
-  patternDisplay.style.fontFamily = "monospace";
-  patternDisplay.style.margin = "15px 0";
-  notification.appendChild(patternDisplay);
-
-  const shareButton = document.createElement("button");
-  shareButton.textContent = "Share";
-  shareButton.classList.add("content-button");
-  shareButton.style.margin = "10px 0";
-  shareButton.addEventListener("click", () => {
-    const topText = isWin
-      ? `I guessed a word in Wordle in ${attempts} attempts`
-      : `I did not guess a word in Wordle`;
-    const shareText = `${topText}\n\n${pattern}\n\nPlay on ${window.location.href}`;
-
-    navigator.clipboard
-      .writeText(shareText)
-      .then(() => {
-        showNotification("Copied to clipboard!");
-      })
-      .catch(() => {
-        showNotification("Failed to copy to clipboard");
-      });
-  });
-
-  notification.appendChild(shareButton);
-
-  const closeButton = document.createElement("button");
-  closeButton.textContent = "×";
-  closeButton.classList.add("notification-close");
-  closeButton.addEventListener("click", () => {
-    notification.classList.remove("show");
-    window.setTimeout(() => {
-      notification.remove();
-    }, 300);
-  });
-
-  notification.appendChild(closeButton);
-  document.body.appendChild(notification);
-
-  window.setTimeout(() => {
-    notification.classList.add("show");
-  }, 100);
-}
-
-function getArrayFullOf<T, Length extends number>(
+function getArrayFullOf<T, Length extends number = number>(
   item: T,
   { length }: { length: Length }
 ): T[] {
@@ -110,24 +49,10 @@ export function useGame() {
   const STORAGE_WORDLE_STATS_KEY = "wordle-stats";
   const [stats, setStats] = createLocalStorageSignal<Stats>(
     STORAGE_WORDLE_STATS_KEY,
-    {
-      gamesPlayed: 0,
-      gamesWon: 0,
-      currentStreak: 0,
-      maxStreak: 0,
-      guessDistribution: [0, 0, 0, 0, 0, 0],
-    }
+    EMPTY_STATS_STATE
   );
 
-  const STORAGE_WORDLE_SETTINGS_KEY = "wordle-settings";
-  const [getSettings, setSettings] = createLocalStorageSignal<Settings>(
-    STORAGE_WORDLE_SETTINGS_KEY,
-    {
-      theme: "system",
-      keyboardLayout: "QWERTY",
-      submitButtonType: "ENTER",
-    }
-  );
+  const { getSettings, setSettings } = useSettings();
 
   const [getState, setState] = createSignal<State>("loading");
   const [getGameMode, setGameMode] = createSignal<GameMode | null>(null);
@@ -138,7 +63,7 @@ export function useGame() {
   const [getSecretWord, setSecretWord] = createSignal<string>("");
 
   const [getCurrentRow, setCurrentRow] = createSignal<number>(0);
-  const [currentTile, setCurrentTile] = createSignal<number>(0);
+  const [getCurrentTile, setCurrentTile] = createSignal<number>(0);
 
   const [getGuesses, setGuesses] = createSignal<string[]>([]);
 
@@ -179,7 +104,6 @@ export function useGame() {
       isWin,
       guesses: getGuesses(),
       secretWord: getSecretWord(),
-      attempts: getCurrentRow() + 1,
     });
   }
 
@@ -276,9 +200,7 @@ export function useGame() {
     }, 500);
   }
 
-  function submitGuess() {
-    const guess = getGuesses()[getCurrentRow()]!.toLowerCase();
-
+  function submitGuess(guess: string) {
     if (!WORDS.guesses.includes(guess)) {
       shakeRow();
       showNotification(`Word ${guess.toUpperCase()} does not exist`);
@@ -295,27 +217,6 @@ export function useGame() {
       setCurrentRow(getCurrentRow() + 1);
       setCurrentTile(0);
     }
-  }
-
-  function getNewWord(gameMode: GameMode) {
-    const newWord = gameMode === "daily" ? getDailyWord() : getRandomWord();
-    return newWord;
-  }
-
-  function getRandomWord(): string {
-    const randomIndex = Math.floor(Math.random() * WORDS.answers.length);
-    const randomWord = WORDS.answers[randomIndex]!;
-    return randomWord;
-  }
-
-  function getDailyWord() {
-    const seed = CONFIG.seed;
-    const today = new Date();
-    const startDate = new Date("2025-01-01");
-    const daysSinceStart = Math.floor(
-      (today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
-    );
-    return WORDS.answers[(daysSinceStart * seed) % WORDS.answers.length]!;
   }
 
   function initializeGame(gameMode: GameMode = "unlimited") {
@@ -362,16 +263,17 @@ export function useGame() {
     if (getState() === "gameover") return;
 
     if (key === "Enter" || key === "Submit") {
-      if (currentTile() !== CONFIG.wordLength) return;
-      submitGuess();
+      if (getCurrentTile() !== CONFIG.wordLength) return;
+      const guess = getGuesses()[getCurrentRow()]!.toLowerCase();
+      submitGuess(guess);
       return;
     }
 
     if (key === "Delete") {
-      if (currentTile() === 0) return;
+      if (getCurrentTile() === 0) return;
 
       const tileIndex =
-        getCurrentRow() * CONFIG.wordLength + (currentTile() - 1);
+        getCurrentRow() * CONFIG.wordLength + (getCurrentTile() - 1);
 
       setTiles((prev) => {
         const copy = [...prev];
@@ -383,13 +285,13 @@ export function useGame() {
       guesses[getCurrentRow()] = guesses[getCurrentRow()]!.slice(0, -1);
       setGuesses(guesses);
 
-      setCurrentTile(currentTile() - 1);
+      setCurrentTile(getCurrentTile() - 1);
       return;
     }
 
-    if (currentTile() >= CONFIG.wordLength) return;
+    if (getCurrentTile() >= CONFIG.wordLength) return;
 
-    const tileIndex = getCurrentRow() * CONFIG.wordLength + currentTile();
+    const tileIndex = getCurrentRow() * CONFIG.wordLength + getCurrentTile();
 
     setTiles((prev) => {
       const copy = [...prev];
@@ -409,7 +311,7 @@ export function useGame() {
     guesses[getCurrentRow()] = (guesses[getCurrentRow()] || "") + key;
     setGuesses(guesses);
 
-    setCurrentTile(currentTile() + 1);
+    setCurrentTile(getCurrentTile() + 1);
   }
 
   const initThemeWatcher = (getTheme: Accessor<Theme>) => {
