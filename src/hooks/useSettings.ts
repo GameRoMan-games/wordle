@@ -17,10 +17,22 @@ export function useSettings() {
     DEFAULT_SETTINGS
   );
 
+  const initThemeWatcher = () => {
+    const theme = getSettings().theme();
+    updateThemeState(theme);
+    window
+      .matchMedia("(prefers-color-scheme: dark)")
+      .addEventListener("change", () => {
+        updateThemeState(theme);
+      });
+  };
+
   function updateSettings(settings: Partial<Settings>) {
     setSettings((prev) => ({ ...prev, ...settings }));
     updateThemeState(getSettings().theme);
   }
+
+  initThemeWatcher();
 
   return { getSettings, updateSettings };
 }

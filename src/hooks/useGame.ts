@@ -16,7 +16,6 @@ import { WORDS, CONFIG } from "~/config";
 import { getNewWord } from "~/lib/get-new-word";
 import { getTileColors } from "~/lib/get-tile-colors";
 import { showNotification } from "~/lib/show-notification";
-import { updateThemeState } from "~/lib/update-theme-state";
 import { showSharePopup } from "~/lib/show-share-popup";
 
 import { useSettings } from "./useSettings";
@@ -253,15 +252,6 @@ export function useGame() {
     setCurrentTile(getCurrentTile() + 1);
   }
 
-  const initThemeWatcher = (getTheme: Accessor<Theme>) => {
-    const theme = getTheme();
-    window
-      .matchMedia("(prefers-color-scheme: dark)")
-      .addEventListener("change", () => {
-        updateThemeState(theme);
-      });
-  };
-
   const initKeyPressHandling = () => {
     document.addEventListener("keydown", (event) => {
       if (event.key === "Enter") {
@@ -275,7 +265,6 @@ export function useGame() {
   };
 
   function init() {
-    initThemeWatcher(() => getSettings().theme);
     fetchWords().then(() => initializeGame("daily"));
     initKeyPressHandling();
   }
