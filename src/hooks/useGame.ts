@@ -33,14 +33,22 @@ export function useGame() {
 
   const [getSecretWord, setSecretWord] = createSignal<string>("");
 
-  const [getCurrentRow, setCurrentRow] = createSignal<number>(0);
-  const [getCurrentTile, setCurrentTile] = createSignal<number>(0);
-
   const [getGuesses, setGuesses] = createSignal<string[]>([]);
 
-  const [keycolors, setKeycolors] = createSignal<Record<string, KeyColor>>({});
+  const [getKeyColors, setKeycolors] = createSignal<Record<string, KeyColor>>(
+    {}
+  );
 
-  const { getTiles, setTiles, resetTiles, flipTile } = useTiles();
+  const {
+    getTiles,
+    setTiles,
+    resetTiles,
+    flipTile,
+    getCurrentRow,
+    setCurrentRow,
+    getCurrentTile,
+    setCurrentTile,
+  } = useTiles();
 
   function finishGame(isWin: boolean) {
     setState("gameover");
@@ -282,7 +290,7 @@ export function useGame() {
     updateSettings,
 
     getTiles,
-    keycolors,
+    getKeyColors,
 
     initializeGame,
 

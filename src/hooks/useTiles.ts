@@ -21,6 +21,9 @@ function getEmptyTiles(): TileInfo[] {
 export function useTiles() {
   const [getTiles, setTiles] = createSignal<TileInfo[]>(getEmptyTiles());
 
+  const [getCurrentRow, setCurrentRow] = createSignal<number>(0);
+  const [getCurrentTile, setCurrentTile] = createSignal<number>(0);
+
   const resetTiles = () => setTiles(getEmptyTiles());
 
   const delay = (ms: number) =>
@@ -49,5 +52,14 @@ export function useTiles() {
     return color;
   }
 
-  return { getTiles, setTiles, resetTiles, flipTile };
+  return {
+    getTiles,
+    setTiles,
+    resetTiles,
+    flipTile,
+    getCurrentRow,
+    setCurrentRow,
+    getCurrentTile,
+    setCurrentTile,
+  };
 }

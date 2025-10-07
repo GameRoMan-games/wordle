@@ -4,6 +4,11 @@ export type State = "loading" | "playing" | "gameover";
 
 export type GameMode = "daily" | "unlimited";
 
+export type GameState = {
+  state: State;
+  gamemode: GameMode;
+};
+
 export type CurrentSection =
   | "game"
   | "menu"

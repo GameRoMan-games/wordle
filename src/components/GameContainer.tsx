@@ -1,3 +1,5 @@
+import { Show } from "solid-js";
+
 import type {
   GameMode,
   Settings,
@@ -10,10 +12,8 @@ import type {
 import GameBoard from "./GameBoard";
 import Keyboard from "./Keyboard";
 
-import { Show } from "solid-js";
-
 const NewGameButton = (props: { label: string; onClick: () => void }) => (
-  <button id="new-game-button" class="content-button" onClick={props.onClick}>
+  <button class="content-button" onClick={props.onClick}>
     {props.label}
   </button>
 );

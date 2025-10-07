@@ -1,3 +1,5 @@
+import NotificationPopup from "~/components/NotificationPopup";
+
 const notificationTimeout: { id: number | null } = { id: null };
 
 export function showNotification(message: string) {
@@ -9,9 +11,7 @@ export function showNotification(message: string) {
     }
   }
 
-  const notification = document.createElement("div");
-  notification.textContent = message;
-  notification.classList.add("notification");
+  const notification = NotificationPopup({ message }) as HTMLDivElement;
   document.body.appendChild(notification);
 
   window.setTimeout(() => {

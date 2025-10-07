@@ -5,14 +5,12 @@ const MenuContainer = (props: {
 }) => (
   <div id="menu-container" class="content-container">
     <button
-      id="play-daily"
       class="content-button"
       onClick={() => props.initializeGame("daily")}
     >
       Play Daily
     </button>
     <button
-      id="play-unlimited"
       class="content-button"
       onClick={() => props.initializeGame("unlimited")}
     >

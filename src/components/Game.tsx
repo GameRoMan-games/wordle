@@ -25,7 +25,7 @@ function App() {
     updateSettings,
 
     getTiles,
-    keycolors,
+    getKeyColors,
 
     initializeGame,
 
@@ -54,7 +54,7 @@ function App() {
             settings={getSettings()}
             initializeGame={initializeGame}
             tiles={getTiles()}
-            keycolors={keycolors()}
+            keycolors={getKeyColors()}
             handleKeyPress={handleKeyPress}
             state={getState()}
           />
