@@ -150,7 +150,7 @@ export function useGame() {
     }
   }
 
-  function initializeGame(gameMode: GameMode = "unlimited") {
+  function startNewGame(gameMode: GameMode = "unlimited") {
     batch(() => {
       setState("playing");
       setGameMode(gameMode);
@@ -272,7 +272,7 @@ export function useGame() {
   };
 
   function init() {
-    fetchWords().then(() => initializeGame("daily"));
+    fetchWords().then(() => startNewGame("daily"));
     initKeyPressHandling();
   }
 
@@ -292,7 +292,7 @@ export function useGame() {
     getTiles,
     getKeyColors,
 
-    initializeGame,
+    startNewGame,
 
     handleKeyPress,
 

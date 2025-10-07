@@ -29,7 +29,7 @@ const GameContainer = (props: {
   handleKeyPress: (key: KeyName) => void;
 
   gamemode: GameMode;
-  initializeGame: (gameMode?: GameMode) => void;
+  startNewGame: (gameMode?: GameMode) => void;
 }) => (
   <div id="game-container" class="content-container">
     <GameBoard tiles={props.tiles} />
@@ -45,7 +45,7 @@ const GameContainer = (props: {
     <Show when={props.state === "gameover"}>
       <NewGameButton
         label={props.gamemode === "unlimited" ? "New Game" : "Play Unlimited"}
-        onClick={() => props.initializeGame("unlimited")}
+        onClick={() => props.startNewGame("unlimited")}
       />
     </Show>
   </div>

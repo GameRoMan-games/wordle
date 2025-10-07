@@ -27,7 +27,7 @@ function App() {
     getTiles,
     getKeyColors,
 
-    initializeGame,
+    startNewGame,
 
     handleKeyPress,
 
@@ -45,14 +45,14 @@ function App() {
 
       <Switch>
         <Match when={currentSection() === "menu"}>
-          <MenuContainer initializeGame={initializeGame} />
+          <MenuContainer startNewGame={startNewGame} />
         </Match>
 
         <Match when={currentSection() === "game"}>
           <GameContainer
             gamemode={getGameMode() ?? "unlimited"}
             settings={getSettings()}
-            initializeGame={initializeGame}
+            startNewGame={startNewGame}
             tiles={getTiles()}
             keycolors={getKeyColors()}
             handleKeyPress={handleKeyPress}

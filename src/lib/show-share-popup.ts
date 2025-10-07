@@ -1,6 +1,23 @@
 import { getGuessPattern } from "./get-guess-patern";
 import { showNotification } from "./show-notification";
 
+const createShareButton = (props: { text: string }) => {
+  const shareButton = document.createElement("button");
+  shareButton.textContent = "Share";
+  shareButton.classList.add("content-button");
+  shareButton.style.margin = "10px 0";
+  shareButton.addEventListener("click", () => {
+    navigator.clipboard
+      .writeText(props.text)
+      .then(() => {
+        showNotification("Copied to clipboard!");
+      })
+      .catch(() => {
+        showNotification("Failed to copy to clipboard");
+      });
+  });
+};
+
 export function showSharePopup({
   isWin,
   guesses,
@@ -10,11 +27,8 @@ export function showSharePopup({
   guesses: string[];
   secretWord: string;
 }) {
-  const attempts = guesses.length;
-  const pattern = getGuessPattern(guesses, secretWord);
-
-  const notification = document.createElement("div");
-  notification.classList.add("notification", "game-over");
+  const popup = document.createElement("div");
+  popup.classList.add("popup", "game-over");
 
   const title = document.createElement("div");
   title.textContent = isWin
@@ -22,50 +36,37 @@ export function showSharePopup({
     : `Game Over! The word was ${secretWord.toUpperCase()}`;
   title.style.fontSize = "1.5rem";
   title.style.marginBottom = "15px";
-  notification.appendChild(title);
+  popup.appendChild(title);
 
+  const pattern = getGuessPattern(guesses, secretWord);
   const patternDisplay = document.createElement("pre");
   patternDisplay.textContent = pattern;
   patternDisplay.style.fontFamily = "monospace";
   patternDisplay.style.margin = "15px 0";
-  notification.appendChild(patternDisplay);
+  popup.appendChild(patternDisplay);
 
-  const shareButton = document.createElement("button");
-  shareButton.textContent = "Share";
-  shareButton.classList.add("content-button");
-  shareButton.style.margin = "10px 0";
-  shareButton.addEventListener("click", () => {
-    const topText = isWin
-      ? `I guessed a word in Wordle in ${attempts} attempts`
-      : `I did not guess a word in Wordle`;
-    const shareText = `${topText}\n\n${pattern}\n\nPlay on ${window.location.href}`;
-
-    navigator.clipboard
-      .writeText(shareText)
-      .then(() => {
-        showNotification("Copied to clipboard!");
-      })
-      .catch(() => {
-        showNotification("Failed to copy to clipboard");
-      });
-  });
-
-  notification.appendChild(shareButton);
+  const attempts = guesses.length;
+  const topText = isWin
+    ? `I guessed a word in Wordle in ${attempts} attempts`
+    : `I did not guess a word in Wordle`;
+  const shareText = `${topText}\n\n${pattern}\n\nPlay on ${window.location.href}`;
+  const shareButton = createShareButton({ text: shareText });
+  popup.appendChild(shareButton);
 
   const closeButton = document.createElement("button");
   closeButton.textContent = "×";
-  closeButton.classList.add("notification-close");
+  closeButton.classList.add("popup-close");
   closeButton.addEventListener("click", () => {
-    notification.classList.remove("show");
+    popup.classList.remove("show");
     window.setTimeout(() => {
-      notification.remove();
+      popup.remove();
     }, 300);
   });
 
-  notification.appendChild(closeButton);
-  document.body.appendChild(notification);
+  popup.appendChild(closeButton);
+  document.body.appendChild(popup);
 
   window.setTimeout(() => {
-    notification.classList.add("show");
+    popup.classList.add("show");
   }, 100);
 }
