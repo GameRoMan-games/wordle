@@ -16,6 +16,7 @@ const createShareButton = (props: { text: string }) => {
         showNotification("Failed to copy to clipboard");
       });
   });
+  return shareButton;
 };
 
 export function showSharePopup({
