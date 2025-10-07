@@ -1,3 +1,6 @@
+import { WORDS, CONFIG } from "~/config";
+import type { GameMode } from "~/types";
+
 function getRandomWord(): string {
   const randomIndex = Math.floor(Math.random() * WORDS.answers.length);
   const randomWord = WORDS.answers[randomIndex]!;

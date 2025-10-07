@@ -2,60 +2,33 @@ import { createSignal, batch, type Accessor } from "solid-js";
 
 import type {
   CurrentSection,
-  Stats,
-  Settings,
   GameMode,
   KeyName,
   State,
   KeyColor,
   TileColor,
-  TileInfo,
   Theme,
+  BoardAction,
 } from "~/types";
 
 import { WORDS, CONFIG } from "~/config";
 
+import { getNewWord } from "~/lib/get-new-word";
 import { getTileColors } from "~/lib/get-tile-colors";
 import { showNotification } from "~/lib/show-notification";
-import { createLocalStorageSignal } from "~/lib/create-local-storage-signal";
 import { updateThemeState } from "~/lib/update-theme-state";
 import { showSharePopup } from "~/lib/show-share-popup";
 
-const EMPTY_STATS_STATE: Stats = {
-  gamesPlayed: 0,
-  gamesWon: 0,
-  currentStreak: 0,
-  maxStreak: 0,
-  guessDistribution: [0, 0, 0, 0, 0, 0],
-};
-
-function getArrayFullOf<T, Length extends number = number>(
-  item: T,
-  { length }: { length: Length }
-): T[] {
-  return Array.from({ length }, () => window.structuredClone(item));
-}
-
-function getEmptyTiles(): TileInfo[] {
-  const tiles = getArrayFullOf<TileInfo>(
-    { letter: "", color: "", anim: "" },
-    { length: CONFIG.maxGuesses * CONFIG.wordLength }
-  );
-
-  return tiles;
-}
+import { useSettings } from "./useSettings";
+import { useStats } from "./useStats";
+import { useTiles } from "./useTiles";
 
 export function useGame() {
-  const STORAGE_WORDLE_STATS_KEY = "wordle-stats";
-  const [stats, setStats] = createLocalStorageSignal<Stats>(
-    STORAGE_WORDLE_STATS_KEY,
-    EMPTY_STATS_STATE
-  );
-
-  const { getSettings, setSettings } = useSettings();
-
   const [getState, setState] = createSignal<State>("loading");
   const [getGameMode, setGameMode] = createSignal<GameMode | null>(null);
+
+  const { getSettings, updateSettings } = useSettings();
+  const { getStats, updateStats } = useStats();
 
   const [currentSection, setCurrentSection] =
     createSignal<CurrentSection>("game");
@@ -69,37 +42,11 @@ export function useGame() {
 
   const [keycolors, setKeycolors] = createSignal<Record<string, KeyColor>>({});
 
-  const [tiles, setTiles] = createSignal<TileInfo[]>(getEmptyTiles());
-
-  function updateSettings(settings: Partial<Settings>) {
-    setSettings((prev) => ({ ...prev, ...settings }));
-    updateThemeState(getSettings().theme);
-  }
-
-  function updateStats(isWin: boolean) {
-    const gamesPlayed = stats().gamesPlayed + 1;
-
-    if (!isWin) {
-      setStats({ ...stats(), gamesPlayed, currentStreak: 0 });
-      return;
-    }
-
-    const guessDistribution = window.structuredClone(stats().guessDistribution);
-    guessDistribution[getCurrentRow()]!++;
-
-    setStats({
-      ...stats(),
-      gamesPlayed,
-      gamesWon: stats().gamesWon + 1,
-      currentStreak: stats().currentStreak + 1,
-      maxStreak: Math.max(stats().maxStreak, stats().currentStreak),
-      guessDistribution,
-    });
-  }
+  const { getTiles, setTiles, resetTiles, flipTile } = useTiles();
 
   function finishGame(isWin: boolean) {
     setState("gameover");
-    updateStats(isWin);
+    updateStats(isWin, getCurrentRow());
     showSharePopup({
       isWin,
       guesses: getGuesses(),
@@ -107,32 +54,10 @@ export function useGame() {
     });
   }
 
-  const FLIP_DELAY = 250;
   const DELAY_BETWEEN_FLIPS = 175;
 
   const delay = (ms: number) =>
     new Promise((resolve) => setTimeout(resolve, ms));
-
-  async function flipTile(
-    tileIndex: number,
-    color: TileColor
-  ): Promise<TileColor> {
-    setTiles((prev) => {
-      const copy = [...prev];
-      copy[tileIndex] = { ...copy[tileIndex]!, anim: "flip" };
-      return copy;
-    });
-
-    await delay(FLIP_DELAY);
-
-    setTiles((prev) => {
-      const copy = [...prev];
-      copy[tileIndex] = { ...copy[tileIndex]!, color, anim: "" };
-      return copy;
-    });
-
-    return color;
-  }
 
   async function colorTiles() {
     const row = getCurrentRow();
@@ -227,7 +152,7 @@ export function useGame() {
       setCurrentRow(0);
       setCurrentTile(0);
 
-      setTiles(getEmptyTiles());
+      resetTiles();
 
       setGuesses([]);
       setKeycolors({});
@@ -259,17 +184,17 @@ export function useGame() {
     return WORDS;
   }
 
-  function handleKeyPress(key: KeyName) {
+  function handleBoardAction(action: BoardAction) {
     if (getState() === "gameover") return;
 
-    if (key === "Enter" || key === "Submit") {
+    if (action === "SUBMIT-GUESS") {
       if (getCurrentTile() !== CONFIG.wordLength) return;
       const guess = getGuesses()[getCurrentRow()]!.toLowerCase();
       submitGuess(guess);
       return;
     }
 
-    if (key === "Delete") {
+    if (action === "DELETE-LETTER") {
       if (getCurrentTile() === 0) return;
 
       const tileIndex =
@@ -286,6 +211,20 @@ export function useGame() {
       setGuesses(guesses);
 
       setCurrentTile(getCurrentTile() - 1);
+      return;
+    }
+  }
+
+  function handleKeyPress(key: KeyName) {
+    if (getState() === "gameover") return;
+
+    if (key === "Enter" || key === "Submit") {
+      handleBoardAction("SUBMIT-GUESS");
+      return;
+    }
+
+    if (key === "Delete") {
+      handleBoardAction("DELETE-LETTER");
       return;
     }
 
@@ -326,9 +265,9 @@ export function useGame() {
   const initKeyPressHandling = () => {
     document.addEventListener("keydown", (event) => {
       if (event.key === "Enter") {
-        handleKeyPress("Enter");
+        handleBoardAction("SUBMIT-GUESS");
       } else if (event.key === "Backspace") {
-        handleKeyPress("Delete");
+        handleBoardAction("DELETE-LETTER");
       } else if (event.key.match(/^[a-zA-Z]$/)) {
         handleKeyPress(event.key.toUpperCase());
       }
@@ -349,12 +288,12 @@ export function useGame() {
     currentSection,
     setCurrentSection,
 
-    stats,
+    getStats,
 
     getSettings,
     updateSettings,
 
-    tiles,
+    getTiles,
     keycolors,
 
     initializeGame,

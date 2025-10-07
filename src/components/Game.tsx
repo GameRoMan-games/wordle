@@ -19,12 +19,12 @@ function App() {
     currentSection,
     setCurrentSection,
 
-    stats,
+    getStats,
 
     getSettings,
     updateSettings,
 
-    tiles,
+    getTiles,
     keycolors,
 
     initializeGame,
@@ -53,7 +53,7 @@ function App() {
             gamemode={getGameMode() ?? "unlimited"}
             settings={getSettings()}
             initializeGame={initializeGame}
-            tiles={tiles()}
+            tiles={getTiles()}
             keycolors={keycolors()}
             handleKeyPress={handleKeyPress}
             state={getState()}
@@ -61,7 +61,7 @@ function App() {
         </Match>
 
         <Match when={currentSection() === "stats"}>
-          <StatsContainer stats={stats()} />
+          <StatsContainer stats={getStats()} />
         </Match>
 
         <Match when={currentSection() === "settings"}>

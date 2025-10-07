@@ -41,10 +41,7 @@ export type Stats = {
 
 // #region Keyboard
 
-export type KeyBasedAction =
-  | "SUBMIT-WORD"
-  | "DELETE-LETTER"
-  | `ENTER-LETTER-${string}`;
+export type BoardAction = "SUBMIT-GUESS" | "DELETE-LETTER";
 export type KeyName = "Enter" | "Submit" | "Delete" | (string & {});
 export type KeyColor = "correct" | "present" | "absent";
 export type KeyColorOrNotColored = KeyColor | "";

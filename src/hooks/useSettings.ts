@@ -1,3 +1,8 @@
+import { createLocalStorageSignal } from "~/lib/create-local-storage-signal";
+import { updateThemeState } from "~/lib/update-theme-state";
+
+import type { Settings } from "~/types";
+
 const DEFAULT_SETTINGS: Settings = {
   theme: "system",
   keyboardLayout: "QWERTY",
@@ -12,5 +17,10 @@ export function useSettings() {
     DEFAULT_SETTINGS
   );
 
-  return { getSettings, setSettings };
+  function updateSettings(settings: Partial<Settings>) {
+    setSettings((prev) => ({ ...prev, ...settings }));
+    updateThemeState(getSettings().theme);
+  }
+
+  return { getSettings, updateSettings };
 }
