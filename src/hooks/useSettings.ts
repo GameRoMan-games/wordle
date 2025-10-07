@@ -18,7 +18,7 @@ export function useSettings() {
   );
 
   const initThemeWatcher = () => {
-    const theme = getSettings().theme();
+    const theme = getSettings().theme;
     updateThemeState(theme);
     window
       .matchMedia("(prefers-color-scheme: dark)")

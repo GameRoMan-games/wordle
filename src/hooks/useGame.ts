@@ -1,4 +1,4 @@
-import { createSignal, batch, type Accessor } from "solid-js";
+import { createSignal, batch } from "solid-js";
 
 import type {
   CurrentSection,
@@ -7,7 +7,6 @@ import type {
   State,
   KeyColor,
   TileColor,
-  Theme,
   BoardAction,
 } from "~/types";
 
