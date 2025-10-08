@@ -15,5 +15,5 @@ const thumbnail = `/images/${id}.png`;
 ---
 
 <Layout {title} {description} {canonical} {thumbnail}>
-  <Game client:load />
+  <Game client:only="solid-js" />
 </Layout>

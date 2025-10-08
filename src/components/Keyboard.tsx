@@ -7,6 +7,7 @@ import type {
   KeyColorOrNotColored,
   Settings,
   KeyName,
+  BoardAction,
 } from "~/types";
 
 const KeyboardButton = (props: {
@@ -50,7 +51,7 @@ const KeyboardButton = (props: {
 
 function getKeysArray(
   settings: Settings,
-  handleKeyPress: (key: KeyName) => void,
+  handleBoardAction: (action: BoardAction) => void,
   keycolors: Record<string, KeyColor>
 ) {
   const elements = [];
@@ -62,7 +63,7 @@ function getKeysArray(
       <KeyboardButton
         name={key}
         color={keycolors[key] ?? ""}
-        onClick={() => handleKeyPress(key)}
+        onClick={() => handleBoardAction({ type: "INPUT-LETTER", data: key })}
       />
     );
   }
@@ -74,7 +75,7 @@ function getKeysArray(
         label="↵"
         width={1}
         height={2}
-        onClick={() => handleKeyPress("Enter")}
+        onClick={() => handleBoardAction({ type: "SUBMIT-GUESS" })}
       />
     );
   } else if (settings.keyboardLayout === "AZERTY") {
@@ -84,7 +85,7 @@ function getKeysArray(
         label="↵"
         width={2}
         height={1}
-        onClick={() => handleKeyPress("Enter")}
+        onClick={() => handleBoardAction({ type: "SUBMIT-GUESS" })}
       />
     );
   }
@@ -94,7 +95,7 @@ function getKeysArray(
       <KeyboardButton
         name={key}
         color={keycolors[key] ?? ""}
-        onClick={() => handleKeyPress(key)}
+        onClick={() => handleBoardAction({ type: "INPUT-LETTER", data: key })}
       />
     );
   }
@@ -105,7 +106,7 @@ function getKeysArray(
       label="⌫"
       width={2}
       height={1}
-      onClick={() => handleKeyPress("Delete")}
+      onClick={() => handleBoardAction({ type: "DELETE-LETTER" })}
     />
   );
 
@@ -116,7 +117,7 @@ function getKeysArray(
         label="SUBMIT"
         width={10}
         height={1}
-        onClick={() => handleKeyPress("Submit")}
+        onClick={() => handleBoardAction({ type: "SUBMIT-GUESS" })}
       />
     );
   }
@@ -127,10 +128,10 @@ function getKeysArray(
 const Keyboard = (props: {
   settings: Settings;
   keycolors: Record<string, KeyColor>;
-  handleKeyPress: (key: KeyName) => void;
+  handleBoardAction: (action: BoardAction) => void;
 }) => {
   const keysArray = () =>
-    getKeysArray(props.settings, props.handleKeyPress, props.keycolors);
+    getKeysArray(props.settings, props.handleBoardAction, props.keycolors);
 
   return (
     <div id="keyboard">

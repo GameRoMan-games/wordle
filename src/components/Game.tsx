@@ -12,24 +12,22 @@ import LeaderboardContainer from "./LeaderboardContainer";
 
 function App() {
   const {
-    state,
-
-    gamemode,
+    getState,
 
     currentSection,
     setCurrentSection,
 
-    stats,
-    settings,
+    getStats,
 
+    getSettings,
     updateSettings,
 
-    tiles,
-    keycolors,
+    getTiles,
+    getKeyColors,
 
-    initializeGame,
+    startNewGame,
 
-    handleKeyPress,
+    handleBoardAction,
 
     init,
   } = useGame();
@@ -45,28 +43,27 @@ function App() {
 
       <Switch>
         <Match when={currentSection() === "menu"}>
-          <MenuContainer initializeGame={initializeGame} />
+          <MenuContainer startNewGame={startNewGame} />
         </Match>
 
         <Match when={currentSection() === "game"}>
           <GameContainer
-            gamemode={gamemode() ?? "unlimited"}
-            settings={settings()}
-            initializeGame={initializeGame}
-            tiles={tiles()}
-            keycolors={keycolors()}
-            handleKeyPress={handleKeyPress}
-            state={state()}
+            settings={getSettings()}
+            startNewGame={() => startNewGame("unlimited")}
+            tiles={getTiles()}
+            keycolors={getKeyColors()}
+            handleBoardAction={handleBoardAction}
+            state={getState()}
           />
         </Match>
 
         <Match when={currentSection() === "stats"}>
-          <StatsContainer stats={stats()} />
+          <StatsContainer stats={getStats()} />
         </Match>
 
         <Match when={currentSection() === "settings"}>
           <SettingsContainer
-            settings={settings()}
+            settings={getSettings()}
             updateSettings={updateSettings}
           />
         </Match>

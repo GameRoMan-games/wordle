@@ -1,23 +1,16 @@
 import type { GameMode } from "~/types";
 
+import Button from "./ui/Button";
+
 const MenuContainer = (props: {
-  initializeGame: (gameMode?: GameMode) => void;
+  startNewGame: (gameMode?: GameMode) => void;
 }) => (
   <div id="menu-container" class="content-container">
-    <button
-      id="play-daily"
-      class="content-button"
-      onClick={() => props.initializeGame("daily")}
-    >
-      Play Daily
-    </button>
-    <button
-      id="play-unlimited"
-      class="content-button"
-      onClick={() => props.initializeGame("unlimited")}
-    >
-      Play Unlimited
-    </button>
+    <Button label="Play Daily" onClick={() => props.startNewGame("daily")} />
+    <Button
+      label="Play Unlimited"
+      onClick={() => props.startNewGame("unlimited")}
+    />
   </div>
 );
 
