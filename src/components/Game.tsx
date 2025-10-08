@@ -14,8 +14,6 @@ function App() {
   const {
     getState,
 
-    getGameMode,
-
     currentSection,
     setCurrentSection,
 
@@ -50,9 +48,8 @@ function App() {
 
         <Match when={currentSection() === "game"}>
           <GameContainer
-            gamemode={getGameMode() ?? "unlimited"}
             settings={getSettings()}
-            startNewGame={startNewGame}
+            startNewGame={() => startNewGame("unlimited")}
             tiles={getTiles()}
             keycolors={getKeyColors()}
             handleBoardAction={handleBoardAction}

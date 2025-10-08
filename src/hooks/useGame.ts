@@ -3,10 +3,10 @@ import { createSignal, batch } from "solid-js";
 import type {
   CurrentSection,
   GameMode,
-  State,
   KeyColor,
   TileColor,
   BoardAction,
+  State,
 } from "~/types";
 
 import { WORDS, CONFIG } from "~/config";
@@ -22,7 +22,6 @@ import { useTiles } from "./useTiles";
 
 export function useGame() {
   const [getState, setState] = createSignal<State>("loading");
-  const [getGameMode, setGameMode] = createSignal<GameMode | null>(null);
 
   const { getSettings, updateSettings } = useSettings();
   const { getStats, updateStats } = useStats();
@@ -66,7 +65,7 @@ export function useGame() {
   const delay = (ms: number) =>
     new Promise((resolve) => setTimeout(resolve, ms));
 
-  async function colorTiles() {
+  async function colorTilesAndKeys() {
     const row = getCurrentRow();
     const guess = getGuesses()[row]!.toLowerCase();
     const tileColors = getTileColors(guess, getSecretWord());
@@ -86,15 +85,9 @@ export function useGame() {
         const upper = letter.toUpperCase();
         const existing = newKeyColors[upper] || "";
 
-        const newKeyColor = (() => {
-          if (existing === "correct") {
-            return "correct";
-          }
-
-          if (existing === "present" && color === "absent") {
-            return "present";
-          }
-
+        const newKeyColor: KeyColor = (() => {
+          if (existing === "correct") return "correct";
+          if (existing === "present" && color === "absent") return "present";
           return color;
         })();
 
@@ -116,7 +109,7 @@ export function useGame() {
       return;
     }
 
-    colorTiles();
+    colorTilesAndKeys();
 
     if (guess === getSecretWord()) {
       finishGame(true);
@@ -128,10 +121,9 @@ export function useGame() {
     }
   }
 
-  function startNewGame(gameMode: GameMode = "unlimited") {
+  function startNewGame(gamemode: GameMode = "unlimited") {
     batch(() => {
       setState("playing");
-      setGameMode(gameMode);
 
       setCurrentRow(0);
       setCurrentTile(0);
@@ -141,20 +133,17 @@ export function useGame() {
       setGuesses([]);
       setKeycolors({});
 
-      setSecretWord(getNewWord(gameMode));
+      setSecretWord(getNewWord(gamemode));
       setCurrentSection("game");
     });
   }
 
   async function fetchWords() {
     try {
-      const [guessesResponse, answersResponse] = await Promise.all([
-        fetch(CONFIG.dataUrls.guesses),
-        fetch(CONFIG.dataUrls.answers),
+      const [guessesString, answersString] = await Promise.all([
+        fetch(CONFIG.dataUrls.guesses).then((r) => r.text()),
+        fetch(CONFIG.dataUrls.answers).then((r) => r.text()),
       ]);
-
-      const guessesString = await guessesResponse.text();
-      const answersString = await answersResponse.text();
 
       const guesses = guessesString.split("\n").map((word) => word.trim());
       const answers = answersString.split("\n").map((word) => word.trim());
@@ -243,8 +232,6 @@ export function useGame() {
 
   return {
     getState,
-
-    getGameMode,
 
     currentSection,
     setCurrentSection,

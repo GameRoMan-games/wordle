@@ -30,19 +30,16 @@ export function useSettings() {
     }
   }
 
-  const initThemeWatcher = () => {
-    updateThemeState();
-    window
-      .matchMedia("(prefers-color-scheme: dark)")
-      .addEventListener("change", updateThemeState);
-  };
-
   function updateSettings(settings: Partial<Settings>) {
     setSettings((prev) => ({ ...prev, ...settings }));
     updateThemeState();
   }
 
-  initThemeWatcher();
+  window
+    .matchMedia("(prefers-color-scheme: dark)")
+    .addEventListener("change", updateThemeState);
+
+  updateThemeState();
 
   return { getSettings, updateSettings };
 }
