@@ -45,8 +45,10 @@ export type Stats = {
 // #endregion
 
 // #region Keyboard
-
-export type BoardAction = "SUBMIT-GUESS" | "DELETE-LETTER";
+export type BoardAction =
+  | { type: "SUBMIT-GUESS" }
+  | { type: "DELETE-LETTER" }
+  | { type: "INPUT-LETTER"; data: string };
 export type KeyName = "Enter" | "Submit" | "Delete" | (string & {});
 export type KeyColor = "correct" | "present" | "absent";
 export type KeyColorOrNotColored = KeyColor | "";

@@ -3,7 +3,7 @@ import { Show } from "solid-js";
 import type {
   GameMode,
   Settings,
-  KeyName,
+  BoardAction,
   State,
   TileInfo,
   KeyColor,
@@ -26,7 +26,7 @@ const GameContainer = (props: {
   state: State;
 
   settings: Settings;
-  handleKeyPress: (key: KeyName) => void;
+  handleBoardAction: (action: BoardAction) => void;
 
   gamemode: GameMode;
   startNewGame: (gameMode?: GameMode) => void;
@@ -38,7 +38,7 @@ const GameContainer = (props: {
       <Keyboard
         settings={props.settings}
         keycolors={props.keycolors}
-        handleKeyPress={props.handleKeyPress}
+        handleBoardAction={props.handleBoardAction}
       />
     </Show>
 

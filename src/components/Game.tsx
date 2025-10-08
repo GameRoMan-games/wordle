@@ -29,7 +29,7 @@ function App() {
 
     startNewGame,
 
-    handleKeyPress,
+    handleBoardAction,
 
     init,
   } = useGame();
@@ -55,7 +55,7 @@ function App() {
             startNewGame={startNewGame}
             tiles={getTiles()}
             keycolors={getKeyColors()}
-            handleKeyPress={handleKeyPress}
+            handleBoardAction={handleBoardAction}
             state={getState()}
           />
         </Match>

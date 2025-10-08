@@ -1,5 +1,4 @@
 import { createLocalStorageSignal } from "~/lib/create-local-storage-signal";
-import { updateThemeState } from "~/lib/update-theme-state";
 
 import type { Settings } from "~/types";
 
@@ -17,19 +16,30 @@ export function useSettings() {
     DEFAULT_SETTINGS
   );
 
-  const initThemeWatcher = () => {
+  function updateThemeState() {
     const theme = getSettings().theme;
-    updateThemeState(theme);
+    const isSystemDark = window.matchMedia(
+      "(prefers-color-scheme: dark)"
+    ).matches;
+    const isDark = theme === "dark" || (theme === "system" && isSystemDark);
+
+    if (isDark) {
+      document.body.classList.add("dark-mode");
+    } else {
+      document.body.classList.remove("dark-mode");
+    }
+  }
+
+  const initThemeWatcher = () => {
+    updateThemeState();
     window
       .matchMedia("(prefers-color-scheme: dark)")
-      .addEventListener("change", () => {
-        updateThemeState(theme);
-      });
+      .addEventListener("change", updateThemeState);
   };
 
   function updateSettings(settings: Partial<Settings>) {
     setSettings((prev) => ({ ...prev, ...settings }));
-    updateThemeState(getSettings().theme);
+    updateThemeState();
   }
 
   initThemeWatcher();

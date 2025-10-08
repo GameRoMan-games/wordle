@@ -3,7 +3,6 @@ import { createSignal, batch } from "solid-js";
 import type {
   CurrentSection,
   GameMode,
-  KeyName,
   State,
   KeyColor,
   TileColor,
@@ -44,6 +43,8 @@ export function useGame() {
     setTiles,
     resetTiles,
     flipTile,
+    shakeCurrentRow,
+    popTile,
     getCurrentRow,
     setCurrentRow,
     getCurrentTile,
@@ -108,32 +109,9 @@ export function useGame() {
     setKeycolors((prev) => ({ ...prev, ...newKeyColors }));
   }
 
-  function shakeRow() {
-    const start = getCurrentRow() * CONFIG.wordLength;
-    const end = start + CONFIG.wordLength;
-
-    setTiles((prev) => {
-      const copy = [...prev];
-      for (let i = start; i < end; i++) {
-        copy[i] = { ...copy[i]!, anim: "shake" };
-      }
-      return copy;
-    });
-
-    window.setTimeout(() => {
-      setTiles((prev) => {
-        const copy = [...prev];
-        for (let i = start; i < end; i++) {
-          copy[i] = { ...copy[i]!, anim: "" };
-        }
-        return copy;
-      });
-    }, 500);
-  }
-
   function submitGuess(guess: string) {
     if (!WORDS.guesses.includes(guess)) {
-      shakeRow();
+      shakeCurrentRow();
       showNotification(`Word ${guess.toUpperCase()} does not exist`);
       return;
     }
@@ -191,20 +169,22 @@ export function useGame() {
   }
 
   function handleBoardAction(action: BoardAction) {
-    if (getState() === "gameover") return;
+    if (getState() !== "playing") return;
 
-    if (action === "SUBMIT-GUESS") {
-      if (getCurrentTile() !== CONFIG.wordLength) return;
-      const guess = getGuesses()[getCurrentRow()]!.toLowerCase();
+    const currentTile = getCurrentTile();
+    const currentRow = getCurrentRow();
+
+    if (action.type === "SUBMIT-GUESS") {
+      if (currentTile !== CONFIG.wordLength) return;
+      const guess = getGuesses()[currentRow]!.toLowerCase();
       submitGuess(guess);
       return;
     }
 
-    if (action === "DELETE-LETTER") {
-      if (getCurrentTile() === 0) return;
+    if (action.type === "DELETE-LETTER") {
+      if (currentTile === 0) return;
 
-      const tileIndex =
-        getCurrentRow() * CONFIG.wordLength + (getCurrentTile() - 1);
+      const tileIndex = currentRow * CONFIG.wordLength + (currentTile - 1);
 
       setTiles((prev) => {
         const copy = [...prev];
@@ -213,67 +193,52 @@ export function useGame() {
       });
 
       const guesses = window.structuredClone(getGuesses());
-      guesses[getCurrentRow()] = guesses[getCurrentRow()]!.slice(0, -1);
+      guesses[currentRow] = guesses[currentRow]!.slice(0, -1);
       setGuesses(guesses);
 
-      setCurrentTile(getCurrentTile() - 1);
+      setCurrentTile(currentTile - 1);
+      return;
+    }
+
+    if (action.type === "INPUT-LETTER") {
+      if (currentTile >= CONFIG.wordLength) return;
+
+      const letter = action.data.toUpperCase();
+      const tileIndex = currentRow * CONFIG.wordLength + currentTile;
+
+      popTile(tileIndex, letter);
+
+      const guesses = window.structuredClone(getGuesses());
+      const currentRowInput = guesses[currentRow] || "";
+      guesses[currentRow] = `${currentRowInput}${letter}`;
+      setGuesses(guesses);
+
+      setCurrentTile(currentTile + 1);
       return;
     }
   }
 
-  function handleKeyPress(key: KeyName) {
-    if (getState() === "gameover") return;
-
-    if (key === "Enter" || key === "Submit") {
-      handleBoardAction("SUBMIT-GUESS");
-      return;
+  function getBoardAction(event: KeyboardEvent): BoardAction | null {
+    const key = event.key;
+    if (key === "Enter") {
+      return { type: "SUBMIT-GUESS" };
     }
-
-    if (key === "Delete") {
-      handleBoardAction("DELETE-LETTER");
-      return;
+    if (key === "Backspace") {
+      return { type: "SUBMIT-GUESS" };
     }
-
-    if (getCurrentTile() >= CONFIG.wordLength) return;
-
-    const tileIndex = getCurrentRow() * CONFIG.wordLength + getCurrentTile();
-
-    setTiles((prev) => {
-      const copy = [...prev];
-      copy[tileIndex] = { ...copy[tileIndex]!, letter: key, anim: "pop" };
-      return copy;
-    });
-
-    window.setTimeout(() => {
-      setTiles((prev) => {
-        const copy = [...prev];
-        copy[tileIndex] = { ...copy[tileIndex]!, anim: "" };
-        return copy;
-      });
-    }, 150);
-
-    const guesses = window.structuredClone(getGuesses());
-    guesses[getCurrentRow()] = (guesses[getCurrentRow()] || "") + key;
-    setGuesses(guesses);
-
-    setCurrentTile(getCurrentTile() + 1);
+    if (key.match(/^[a-zA-Z]$/)) {
+      handleBoardAction({ type: "INPUT-LETTER", data: key });
+    }
+    return null;
   }
-
-  const initKeyPressHandling = () => {
-    document.addEventListener("keydown", (event) => {
-      if (event.key === "Enter") {
-        handleBoardAction("SUBMIT-GUESS");
-      } else if (event.key === "Backspace") {
-        handleBoardAction("DELETE-LETTER");
-      } else if (event.key.match(/^[a-zA-Z]$/)) {
-        handleKeyPress(event.key.toUpperCase());
-      }
-    });
-  };
 
   function init() {
     fetchWords().then(() => startNewGame("daily"));
-    initKeyPressHandling();
+    document.addEventListener("keydown", (event) => {
+      const action = getBoardAction(event);
+      if (!action) return;
+      handleBoardAction(action);
+    });
   }
 
   return {
@@ -294,7 +259,7 @@ export function useGame() {
 
     startNewGame,
 
-    handleKeyPress,
+    handleBoardAction,
 
     init,
   };

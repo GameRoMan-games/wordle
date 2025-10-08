@@ -52,11 +52,53 @@ export function useTiles() {
     return color;
   }
 
+  function popTile(tileIndex: number, letter: string) {
+    setTiles((prev) => {
+      const copy = [...prev];
+      copy[tileIndex] = { ...copy[tileIndex]!, letter, anim: "pop" };
+      return copy;
+    });
+
+    window.setTimeout(() => {
+      setTiles((prev) => {
+        const copy = [...prev];
+        copy[tileIndex] = { ...copy[tileIndex]!, anim: "" };
+        return copy;
+      });
+    }, 150);
+  }
+
+  function shakeCurrentRow() {
+    const row = getCurrentRow();
+    const start = row * CONFIG.wordLength;
+    const end = start + CONFIG.wordLength;
+
+    setTiles((prev) => {
+      const copy = [...prev];
+      for (let i = start; i < end; i++) {
+        copy[i] = { ...copy[i]!, anim: "shake" };
+      }
+      return copy;
+    });
+
+    window.setTimeout(() => {
+      setTiles((prev) => {
+        const copy = [...prev];
+        for (let i = start; i < end; i++) {
+          copy[i] = { ...copy[i]!, anim: "" };
+        }
+        return copy;
+      });
+    }, 500);
+  }
+
   return {
     getTiles,
     setTiles,
+    shakeCurrentRow,
     resetTiles,
     flipTile,
+    popTile,
     getCurrentRow,
     setCurrentRow,
     getCurrentTile,
