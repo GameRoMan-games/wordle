@@ -16,11 +16,11 @@ function SharePopup(props: {
     <div class="notification game-over">
       <div
         textContent={props.title}
-        style={{ fontSize: "1.5rem", marginBottom: "15px" }}
+        style={{ "font-size": "1.5rem", "margin-bottom": "15px" }}
       />
       <pre
         textContent={props.pattern}
-        style={{ fontFamily: "monospace", margin: "15px 0" }}
+        style={{ "font-family": "monospace", margin: "15px 0" }}
       />
       <button
         textContent="Share"
@@ -43,5 +43,6 @@ function SharePopup(props: {
 }
 
 export default SharePopup;
+
 
 
