@@ -24,19 +24,10 @@ export function showSharePopup({
   const shareText = `${topText}\n\n${pattern}\n\nPlay on ${window.location.href}`;
 
   const popup = SharePopup({ isWin, title, pattern, shareText });
-
-  const closeButton = document.createElement("button");
-  closeButton.textContent = "×";
-  closeButton.classList.add("popup-close");
-  closeButton.addEventListener("click", () => {
-    popup.classList.remove("show");
-    window.setTimeout(popup.remove, 300);
-  });
-  popup.appendChild(closeButton);
-
   document.body.appendChild(popup);
 
   window.setTimeout(() => {
     popup.classList.add("show");
   }, 100);
 }
+
