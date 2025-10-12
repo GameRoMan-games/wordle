@@ -22,17 +22,13 @@ function SharePopup(props: {
         textContent={props.pattern}
         style={{ fontFamily: "monospace", margin: "15px 0" }}
       />
-      {/*<button
+      <button
         textContent="Share"
         class="content-button"
         style={{ margin: "10px 0" }}
         onClick={() => copyTextToClipboard(props.shareText)}
-      />*/}
-    </div>
-  ) as HTMLDivElement;
-
-  const closeButton = (
-    <button
+      />
+      <button
       textContent="×"
       class="notification-close"
       onClick={() => {
@@ -40,11 +36,12 @@ function SharePopup(props: {
         window.setTimeout(popup.remove, 300);
       }}
     />
-  ) as HTMLButtonElement;
-  popup.appendChild(closeButton);
+    </div>
+  ) as HTMLDivElement;
 
   return popup;
 }
 
 export default SharePopup;
+
 
