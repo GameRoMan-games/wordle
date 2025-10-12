@@ -13,7 +13,7 @@ function SharePopup(props: {
   shareText: string;
 }) {
   const popup = (
-    <div class="popup game-over">
+    <div class="notification game-over">
       <div
         textContent={props.title}
         style={{ fontSize: "1.5rem", marginBottom: "15px" }}
@@ -22,19 +22,19 @@ function SharePopup(props: {
         textContent={props.pattern}
         style={{ fontFamily: "monospace", margin: "15px 0" }}
       />
-      <button
+      {/*<button
         textContent="Share"
         class="content-button"
         style={{ margin: "10px 0" }}
         onClick={() => copyTextToClipboard(props.shareText)}
-      />
+      />*/}
     </div>
   ) as HTMLDivElement;
 
   const closeButton = (
     <button
       textContent="×"
-      class="popup-close"
+      class="notification-close"
       onClick={() => {
         popup.classList.remove("show");
         window.setTimeout(popup.remove, 300);
@@ -47,3 +47,4 @@ function SharePopup(props: {
 }
 
 export default SharePopup;
+
