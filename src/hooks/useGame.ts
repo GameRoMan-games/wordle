@@ -213,7 +213,7 @@ export function useGame() {
       return { type: "SUBMIT-GUESS" };
     }
     if (key === "Backspace") {
-      return { type: "SUBMIT-GUESS" };
+      return { type: "DELETE-LETTER" };
     }
     if (key.match(/^[a-zA-Z]$/)) {
       handleBoardAction({ type: "INPUT-LETTER", data: key });
