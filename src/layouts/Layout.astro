@@ -1,12 +1,12 @@
 ---
-import type { JSXElement } from "solid-js";
+import type { JSX } from "solid-js";
 
 interface Props {
   title: string;
   description: string;
   canonical: string;
   thumbnail: string;
-  children: () => JSXElement;
+  children: () => JSX.Element;
 }
 
 const { title, description, canonical, thumbnail } = Astro.props;

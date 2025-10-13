@@ -94,7 +94,8 @@
   --notification-game-over-padding: 20px 40px;
   --notification-game-over-border-radius: 10px;
   --notification-game-over-box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  /* Animations */
+
+  /* --- Animations --- */
   --animation-pop-duration: 0.15s;
   --animation-flip-duration: 0.6s;
   --animation-shake-duration: 0.5s;

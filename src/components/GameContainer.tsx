@@ -1,35 +1,20 @@
-import type {
-  GameMode,
-  Settings,
-  KeyName,
-  State,
-  TileInfo,
-  KeyColor,
-} from "~/types";
+import { Show } from "solid-js";
+
+import type { Settings, BoardAction, TileInfo, KeyColor, State } from "~/types";
 
 import GameBoard from "./GameBoard";
 import Keyboard from "./Keyboard";
 
-import { Show } from "solid-js";
-
-const NewGameButton = (props: { label: string; onClick: () => void }) => (
-  <button id="new-game-button" class="content-button" onClick={props.onClick}>
-    {props.label}
-  </button>
-);
+import Button from "./ui/Button";
 
 const GameContainer = (props: {
   tiles: TileInfo[];
-
   keycolors: Record<string, KeyColor>;
-
   state: State;
-
   settings: Settings;
-  handleKeyPress: (key: KeyName) => void;
+  handleBoardAction: (action: BoardAction) => void;
 
-  gamemode: GameMode;
-  initializeGame: (gameMode?: GameMode) => void;
+  startNewGame: () => void;
 }) => (
   <div id="game-container" class="content-container">
     <GameBoard tiles={props.tiles} />
@@ -38,15 +23,12 @@ const GameContainer = (props: {
       <Keyboard
         settings={props.settings}
         keycolors={props.keycolors}
-        handleKeyPress={props.handleKeyPress}
+        handleBoardAction={props.handleBoardAction}
       />
     </Show>
 
     <Show when={props.state === "gameover"}>
-      <NewGameButton
-        label={props.gamemode === "unlimited" ? "New Game" : "Play Unlimited"}
-        onClick={() => props.initializeGame("unlimited")}
-      />
+      <Button label="New Game" onClick={props.startNewGame} />
     </Show>
   </div>
 );
