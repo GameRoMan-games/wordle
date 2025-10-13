@@ -29,13 +29,13 @@ function SharePopup(props: {
         onClick={() => copyTextToClipboard(props.shareText)}
       />
       <button
-      textContent="×"
-      class="notification-close"
-      onClick={() => {
-        popup.classList.remove("show");
-        window.setTimeout(popup.remove, 300);
-      }}
-    />
+        textContent="×"
+        class="notification-close"
+        onClick={() => {
+          popup.classList.remove("show");
+          window.setTimeout(() => popup.remove(), 300);
+        }}
+      />
     </div>
   ) as HTMLDivElement;
 
@@ -43,6 +43,3 @@ function SharePopup(props: {
 }
 
 export default SharePopup;
-
-
-
