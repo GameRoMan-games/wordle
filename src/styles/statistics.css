@@ -10,7 +10,7 @@
 .stat-box {
   background-color: var(--key-background-color);
   border: 2px solid var(--tile-border-color);
-  border-radius: var(--stat-box-border-radius);
+  border-radius: 5px;
   padding: var(--stat-box-padding);
   @apply text-center;
 }
@@ -23,7 +23,7 @@
 .stat-number {
   font-size: var(--stat-number-font-size);
   @apply font-bold;
-  margin-bottom: var(--stat-number-margin-bottom);
+  @apply mb-[5px];
 }
 
 .stat-label {
@@ -33,25 +33,20 @@
 #guess-distribution {
   @apply flex;
   @apply flex-col;
-  gap: var(--guess-distribution-gap);
+  @apply gap-[5px];
   @apply w-full;
-}
-
-#stats-container h3 {
-  margin-top: 10px;
-  margin-bottom: 10px;
 }
 
 .guess-row {
   @apply flex;
   @apply items-center;
-  width: 90%;
+  @apply w-9/10;
 }
 
 .guess-label {
   width: var(--guess-label-width);
   @apply text-right;
-  margin-right: var(--guess-label-margin-right);
+  @apply mr-[10px];
   @apply font-bold;
   font-size: var(--guess-label-font-size);
 }
@@ -61,20 +56,20 @@
   height: var(--guess-bar-height);
   background-color: var(--absent-color);
   @apply relative;
-  border-radius: var(--guess-bar-border-radius);
+  @apply rounded-[4px];
 }
 
 .guess-bar-fill {
   background-color: var(--correct-color);
   @apply h-full;
-  border-radius: var(--guess-bar-fill-border-radius);
+  @apply rounded-[4px];
   transition: width 0.5s ease-in-out;
 }
 
 .guess-count {
   @apply absolute;
-  right: var(--guess-count-right);
-  top: 50%;
+  @apply right-[5px];
+  @apply top-1/2;
   transform: translateY(-50%);
   @apply font-bold;
   color: var(--text-color-light);

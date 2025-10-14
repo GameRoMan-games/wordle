@@ -35,7 +35,7 @@
   --content-button-color-dark: #f0f0f0;
   --content-button-border-color-dark: #555;
   --content-button-hover-background-color-dark: #4a4a4a;
-  --content-button-hover-color-dark: #ffffff;
+  --content-button-hover-color-dark: #fff;
 
   /* --- Sizes --- */
   --game-title-font-size: min(34px, 8vw, 4vh);
@@ -65,27 +65,19 @@
   --enter-key-font-size: min(32px, 8vw);
   /* -- */
   --game-board-gap: min(5px, 1vw);
-  --game-board-margin-bottom: 20px;
   --tile-width: min(60px, 15vw, 8vh);
   --tile-height: min(60px, 15vw, 8vh);
   --tile-font-size: min(32px, 8vw, 4vh);
   /* Stats */
   --stats-grid-gap: min(20px, 5vw);
   --stats-grid-margin-bottom: min(20px, 5vw);
-  --stat-box-border-radius: 5px;
   --stat-box-padding: min(10px, 3vw);
   --stat-number-font-size: min(24px, 8vw);
-  --stat-number-margin-bottom: 5px;
   --stat-label-font-size: min(16px, 5vw);
   /* guess- */
-  --guess-distribution-gap: 5px;
   --guess-label-width: min(20px, 5vw);
-  --guess-label-margin-right: 10px;
   --guess-label-font-size: min(16px, 4vw);
   --guess-bar-height: min(30px, 8vw);
-  --guess-bar-border-radius: 5px;
-  --guess-bar-fill-border-radius: 4px;
-  --guess-count-right: 5px;
   --guess-count-font-size: min(16px, 4vw);
 
   /* --- Animations --- */
