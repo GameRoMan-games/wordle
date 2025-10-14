@@ -5,6 +5,7 @@
 
   /* --- Colors --- */
   color-scheme: light dark;
+
   --background-color-light: #f0f0f0;
   --text-color-light: #1a1a1a;
   --background-color-dark: #1a1a1a;
@@ -16,7 +17,7 @@
   --correct-color: #6aaa64;
   --present-color: #c9b458;
   --absent-color: #787c7e;
-  /* setting- */
+  /* Settings */
   --settings-background-color-light: #f9f9f9;
   --settings-background-color-dark: #2a2a2a;
   --setting-select-border-color: #ccc;
@@ -34,16 +35,18 @@
   --content-button-color-dark: #f0f0f0;
   --content-button-border-color-dark: #555;
   --content-button-hover-background-color-dark: #4a4a4a;
-  --content-button-hover-color-dark: #ffffff;
+  --content-button-hover-color-dark: #fff;
 
   /* --- Sizes --- */
   --game-title-font-size: min(34px, 8vw, 4vh);
+  --content-max-width: 450px;
   /* top-bar- */
   --top-bar-height: min(60px, 15vw, 8vh);
   --top-bar-margin-bottom: 20px;
   --top-bar-buttons-div-gap: min(10px, 3vw);
   --top-bar-button-size: min(30px, 8vw, 4vh);
   --top-bar-button-padding: min(4px, 1vw);
+  /* Settings */
   --settings-group-margin-bottom: min(15px, 4vw, 2vh);
   /* setting- */
   --setting-select-width: min(130px, 35vw);
@@ -60,40 +63,22 @@
   --key-size: min(40px, 8vw, 6vh);
   --key-font-size: min(24px, 6vw);
   --enter-key-font-size: min(32px, 8vw);
+  /* -- */
   --game-board-gap: min(5px, 1vw);
-  --game-board-margin-bottom: 20px;
   --tile-width: min(60px, 15vw, 8vh);
   --tile-height: min(60px, 15vw, 8vh);
   --tile-font-size: min(32px, 8vw, 4vh);
-  --content-max-width: 450px;
   /* Stats */
   --stats-grid-gap: min(20px, 5vw);
   --stats-grid-margin-bottom: min(20px, 5vw);
-  --stat-box-border-radius: 5px;
   --stat-box-padding: min(10px, 3vw);
   --stat-number-font-size: min(24px, 8vw);
-  --stat-number-margin-bottom: 5px;
   --stat-label-font-size: min(16px, 5vw);
   /* guess- */
-  --guess-distribution-gap: 5px;
   --guess-label-width: min(20px, 5vw);
-  --guess-label-margin-right: 10px;
   --guess-label-font-size: min(16px, 4vw);
   --guess-bar-height: min(30px, 8vw);
-  --guess-bar-border-radius: 5px;
-  --guess-bar-fill-border-radius: 4px;
-  --guess-count-right: 5px;
   --guess-count-font-size: min(16px, 4vw);
-  /* Notifications */
-  --notification-background-color: rgba(0, 0, 0, 0.8);
-  --notification-color: white;
-  --notification-font-size: 1.2em;
-  --notification-padding: 10px 20px;
-  --notification-border-radius: 5px;
-  --notification-game-over-background-color: rgba(0, 0, 0, 0.95);
-  --notification-game-over-padding: 20px 40px;
-  --notification-game-over-border-radius: 10px;
-  --notification-game-over-box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 
   /* --- Animations --- */
   --animation-pop-duration: 0.15s;

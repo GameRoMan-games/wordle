@@ -61,7 +61,7 @@ const StatsContainer = (props: { stats: Stats }) => (
       </div>
     </div>
 
-    <h3 id="guess-distribution-title">Guess Distribution</h3>
+    <h3 class="my-[10px]">Guess Distribution</h3>
 
     <GuessDistribution guessDistribution={props.stats.guessDistribution} />
   </div>

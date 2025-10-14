@@ -13,7 +13,7 @@ function SharePopup(props: {
   shareText: string;
 }) {
   const popup = (
-    <div class="notification game-over">
+    <div class="share-popup-game-over">
       <div
         textContent={props.title}
         style={{ "font-size": "1.5rem", "margin-bottom": "15px" }}
@@ -30,7 +30,7 @@ function SharePopup(props: {
       />
       <button
         textContent="×"
-        class="notification-close"
+        class="share-popup-close"
         onClick={() => {
           popup.classList.remove("show");
           window.setTimeout(() => popup.remove(), 300);
