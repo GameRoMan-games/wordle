@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 .notification {
   @apply fixed;
   top: 10%;
