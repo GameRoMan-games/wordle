@@ -189,6 +189,15 @@ body {
   }
 }
 
+:root {
+  --keyboard-gap: min(5px, 1vw);
+  --key-size: min(40px, 8vw, 6vh);
+}
+
+#keyboard {
+  gap: var(--keyboard-gap);
+}
+
 .key {
   @apply text-black;
   @apply border-0;
@@ -196,7 +205,8 @@ body {
   @apply text-2xl;
   @apply font-bold;
   @apply cursor-pointer;
-  @apply size-10;
+  width: var(--key-size);
+  height: var(--key-size);
   @apply p-0;
 }
 
