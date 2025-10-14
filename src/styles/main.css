@@ -313,7 +313,7 @@ body.dark-mode .top-bar-button svg {
   @apply flex;
   @apply flex-row;
   gap: var(--top-bar-buttons-div-gap);
-  @apply basis: 1/3;
+  @apply basis-1/3;
 }
 
 .top-bar-buttons-div:last-child {
