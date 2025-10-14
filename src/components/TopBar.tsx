@@ -60,7 +60,9 @@ const TopBar = (props: {
       </TopbarButton>
     </div>
 
-    <h1 id="game-title" class="font-bold text-[2em] m-0 text-center tracking-[2px] grow">Wordle</h1>
+    <h1 class="font-bold text-[2em] m-0 text-center tracking-[2px] grow font-courier">
+      Wordle
+    </h1>
 
     <div class="flex flex-row gap-2.5 basis-1/3 justify-end">
       <TopbarButton

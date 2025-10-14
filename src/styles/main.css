@@ -10,6 +10,10 @@
   @apply leading-none;
 }
 
+@theme {
+  --font-courier: "Courier New", Courier, monospace;
+}
+
 :root {
   /* --- Colors --- */
   color-scheme: light dark;
@@ -23,19 +27,19 @@
   --border-color-light: #ccc;
   --border-color-dark: #555;
 
+  /* content- */
+  --content-background-color-light: #d3d6da;
+  --content-background-color-dark: #3a3a3a;
+
+  --content-hover-background-color: #bbb;
+  --content-hover-background-color-dark: #4a4a4a;
+
   /* Settings */
   --settings-background-color-light: #f9f9f9;
   --settings-background-color-dark: #2a2a2a;
 
   --setting-select-background-color-light: #fff;
   --setting-select-background-color-dark: #3a3a3a;
-
-  /* content-button- */
-  --content-background-color-light: #d3d6da;
-  --content-background-color-dark: #3a3a3a;
-
-  --content-hover-background-color: #bbb;
-  --content-hover-background-color-dark: #4a4a4a;
 }
 
 :root {
@@ -47,7 +51,6 @@
 :root {
   /* --- Fonts --- */
   --font-family: Arial, sans-serif;
-  --title-font-family: "Courier New", Courier, monospace;
 
   --enter-key-font-size: min(32px, 8vw);
 
@@ -61,68 +64,59 @@
 }
 
 body {
-  @apply relative;
   font-family: var(--font-family);
+  @apply relative;
   @apply flex;
   @apply flex-col;
   @apply items-center;
-  background-color: var(--background-color-light);
-  color: var(--text-color-light);
-  transition: background-color 0.3s, color 0.3s;
+  @apply bg-(--background-color-light) dark:bg-(--background-color-dark);
+  @apply text-(--text-color-light) dark:text-(--text-color-dark);
   @apply cursor-default;
   @apply m-0;
   @apply p-0;
-}
-
-body.dark-mode {
-  background-color: var(--background-color-dark);
-  color: var(--text-color-dark);
+  transition: background-color 0.3s, color 0.3s;
 }
 
 #main-container {
-  @apply flex;
   @apply w-[95%];
+  @apply flex;
   @apply flex-col;
   @apply items-center;
-  max-width: var(--content-max-width);
   @apply my-0 mx-auto;
+  max-width: var(--content-max-width);
 }
 
 .content-container {
+  @apply w-full;
   @apply flex;
   @apply flex-col;
   @apply items-center;
-  @apply w-full;
-  max-width: var(--content-max-width);
   @apply my-0 mx-auto;
+  max-width: var(--content-max-width);
 }
 
 #top-bar {
   @apply flex;
   @apply justify-between;
   @apply items-center;
-  height: min(60px, 15vw, 8vh);
-  border-bottom: 1px solid var(--border-color-light);
+  @apply h-[3.75rem];
+  @apply border-b-[1px];
+  @apply border-solid;
+  @apply border-(--border-color-light) dark:border-(--border-color-dark);
   @apply w-full;
-  max-width: var(--content-max-width);
   @apply mb-5;
-}
-
-.dark-mode #top-bar {
-  border-bottom-color: var(--text-color-dark);
+  max-width: var(--content-max-width);
 }
 
 .tile {
-  --tile-size: min(60px, 15vw, 8vh);
-  width: var(--tile-size);
-  height: var(--tile-size);
-  border-width: 2px;
-  border-style: solid;
-  border-color: var(--border-color-light);
+  @apply size-[60px];
+  @apply border-2;
+  @apply border-solid;
+  @apply border-(--border-color-light);
   @apply flex;
   @apply justify-center;
   @apply items-center;
-  font-size: min(32px, 8vw, 4vh);
+  @apply text-[8em];
   @apply font-bold;
   @apply uppercase;
   transition: transform 0.3s ease, background-color 0.3s ease;
@@ -195,24 +189,14 @@ body.dark-mode {
   }
 }
 
-#keyboard {
-  @apply grid;
-  grid-template-columns: repeat(10, 1fr);
-  --keyboard-gap: min(5px, 1vw);
-  gap: var(--keyboard-gap);
-}
-
 .key {
   @apply text-black;
   @apply border-0;
   background-color: var(--content-background-color-light);
-  --key-font-size: min(24px, 6vw);
-  font-size: var(--key-font-size);
+  @apply text-2xl;
   @apply font-bold;
   @apply cursor-pointer;
-  --key-size: min(40px, 8vw, 6vh);
-  width: var(--key-size);
-  height: var(--key-size);
+  @apply size-10;
   @apply p-0;
 }
 
@@ -241,17 +225,17 @@ body.dark-mode {
 }
 
 .content-button {
-  margin-top: min(20px, 8vw);
-  padding: min(10px, 4vw) min(20px, 8vw);
-  font-size: min(18px, 7vw);
-  background-color: var(--content-background-color-light);
-  color: var(--text-color-light);
-  border-width: 2px;
+  @apply mt-5;
+  @apply py-2.5 px-5;
+  @apply text-lg;
+  @apply text-(--text-color-light) dark:text-(--text-color-dark);
+  @apply border-2;
   @apply border-solid;
-  border-color: var(--border-color-light);
+  @apply border-(--border-color-light) dark:border-(--border-color-dark);
   @apply cursor-pointer;
   @apply font-bold;
   @apply uppercase;
+  background-color: var(--content-background-color-light);
   transition: background-color 0.3s, color 0.3s;
 }
 
@@ -263,19 +247,12 @@ body.dark-mode {
 
 .dark-mode .content-button {
   background-color: var(--content-background-color-dark);
-  color: var(--text-color-dark);
-  border-color: var(--border-color-dark);
 }
 
 @media (hover: hover) {
   .dark-mode .content-button:hover {
     background-color: var(--content-hover-background-color-dark);
   }
-}
-
-#game-title {
-  font-size: min(34px, 8vw, 4vh);
-  font-family: var(--title-font-family);
 }
 
 .top-bar-button {
@@ -296,14 +273,8 @@ body.dark-mode {
 }
 
 .top-bar-button svg {
-  --top-bar-button-size: min(30px, 8vw, 4vh);
-  width: var(--top-bar-button-size);
-  height: var(--top-bar-button-size);
-  stroke: var(--text-color-light);
-}
-
-body.dark-mode .top-bar-button svg {
-  stroke: var(--text-color-dark);
+  @apply size-[30px];
+  @apply stroke-(--text-color-light) dark:stroke-(--text-color-dark);
 }
 
 .setting-select {
@@ -313,15 +284,13 @@ body.dark-mode .top-bar-button svg {
   @apply border-[1px];
   @apply border-solid;
   @apply rounded-[5px];
-  border-color: var(--border-color-light);
+  @apply text-(--text-color-light) dark:text-(--text-color-dark);
+  @apply border-(--border-color-light) dark:border-(--border-color-dark);
   background-color: var(--setting-select-background-color-light);
-  color: var(--text-color-light);
 }
 
 .dark-mode .setting-select {
   background-color: var(--setting-select-background-color-dark);
-  color: var(--text-color-dark);
-  border-color: var(--border-color-dark);
 }
 
 .setting-select:focus {
@@ -352,16 +321,16 @@ body.dark-mode .top-bar-button svg {
 
 .guess-bar {
   @apply grow;
-  height: min(30px, 8vw);
-  background-color: var(--absent-color);
+  @apply h-[30px];
   @apply relative;
   @apply rounded-sm;
+  background-color: var(--absent-color);
 }
 
 .guess-bar-fill {
-  background-color: var(--correct-color);
   @apply h-full;
   @apply rounded-sm;
+  background-color: var(--correct-color);
   transition: width 0.5s ease-in-out;
 }
 
