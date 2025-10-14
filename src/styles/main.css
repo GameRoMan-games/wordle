@@ -13,7 +13,7 @@ html {
 }
 
 body {
-  position: relative;
+  @apply relative;
   font-family: var(--font-family);
   @apply flex;
   @apply flex-col;
@@ -34,12 +34,12 @@ body.dark-mode {
 h2,
 h3 {
   @apply text-center;
-  margin-bottom: 20px;
+  @apply mb-[20px];
 }
 
 #main-container {
   @apply flex;
-  width: 95%;
+  @apply w-[95%];
   @apply flex-col;
   @apply items-center;
   max-width: var(--content-max-width);
@@ -64,7 +64,6 @@ h3 {
   @apply w-full;
   max-width: var(--content-max-width);
   margin-bottom: var(--top-bar-margin-bottom);
-  box-sizing: border-box;
 }
 
 .dark-mode #top-bar {
@@ -87,7 +86,7 @@ h3 {
   @apply items-center;
   font-size: var(--tile-font-size);
   @apply font-bold;
-  text-transform: uppercase;
+  @apply uppercase;
   transition: transform 0.3s ease, background-color 0.3s ease;
 }
 
@@ -209,7 +208,7 @@ h3 {
   border: 2px solid var(--content-button-border-color);
   @apply cursor-pointer;
   @apply font-bold;
-  text-transform: uppercase;
+  @apply uppercase;
   transition: background-color 0.3s, color 0.3s;
 }
 
