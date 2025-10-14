@@ -87,16 +87,6 @@
   --guess-bar-fill-border-radius: 4px;
   --guess-count-right: 5px;
   --guess-count-font-size: min(16px, 4vw);
-  /* Notifications */
-  --notification-background-color: rgba(0, 0, 0, 0.8);
-  --notification-color: white;
-  --notification-font-size: 1.2em;
-  --notification-padding: 10px 20px;
-  --notification-border-radius: 5px;
-  --notification-game-over-background-color: rgba(0, 0, 0, 0.95);
-  --notification-game-over-padding: 20px 40px;
-  --notification-game-over-border-radius: 10px;
-  --notification-game-over-box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 
   /* --- Animations --- */
   --animation-pop-duration: 0.15s;

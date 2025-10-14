@@ -5,11 +5,11 @@
   top: 10%;
   left: 50%;
   transform: translateX(-50%) translateY(-100%);
-  background-color: var(--notification-background-color);
-  color: var(--notification-color);
-  padding: var(--notification-padding);
-  border-radius: var(--notification-border-radius);
-  font-size: var(--notification-font-size);
+  background-color: rgba(0, 0, 0, 0.8);
+  @apply text-white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 1.2em;
   @apply opacity-0;
   transition: transform 0.3s, opacity 0.3s;
   @apply w-fit;
@@ -17,17 +17,17 @@
 
 .share-popup-game-over {
   left: 50%;
-  color: var(--notification-color);
-  font-size: var(--notification-font-size);
+  @apply text-white;
+  font-size: 1.2em;
   @apply opacity-0;
   transition: transform 0.3s, opacity 0.3s;
   @apply absolute;
   top: 50%;
   transform: translate(-50%, -50%) scale(0.8);
-  background-color: var(--notification-game-over-background-color);
-  padding: var(--notification-game-over-padding);
-  border-radius: var(--notification-game-over-border-radius);
-  box-shadow: var(--notification-game-over-box-shadow);
+  background-color: rgba(0, 0, 0, 0.95);
+  padding: 20px 40px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   @apply text-center;
   @apply w-fit;
 }
