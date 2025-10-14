@@ -2,34 +2,22 @@
 
 .notification {
   @apply fixed;
-  top: 10%;
-  left: 50%;
+  @apply top-1/10;
+  @apply left-1/2;
   transform: translateX(-50%) translateY(-100%);
   background-color: rgba(0, 0, 0, 0.8);
   @apply text-white;
   padding: 10px 20px;
-  border-radius: 5px;
-  font-size: 1.2em;
+  @apply rounded-[5px];
+  @apply text-[1.2em];
   @apply opacity-0;
   transition: transform 0.3s, opacity 0.3s;
   @apply w-fit;
 }
 
-.share-popup-game-over {
-  left: 50%;
-  @apply text-white;
-  font-size: 1.2em;
-  @apply opacity-0;
-  transition: transform 0.3s, opacity 0.3s;
-  @apply absolute;
-  top: 50%;
-  transform: translate(-50%, -50%) scale(0.8);
-  background-color: rgba(0, 0, 0, 0.95);
-  padding: 20px 40px;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  @apply text-center;
-  @apply w-fit;
+.dark-mode .notification {
+  background-color: rgba(255, 255, 255, 0.8);
+  @apply text-black;
 }
 
 .notification.show {
@@ -37,14 +25,27 @@
   @apply opacity-100;
 }
 
+.share-popup-game-over {
+  @apply left-1/2;
+  @apply text-white;
+  @apply text-[1.2em];
+  @apply opacity-0;
+  transition: transform 0.3s, opacity 0.3s;
+  @apply absolute;
+  @apply top-1/2;
+  transform: translate(-50%, -50%) scale(0.8);
+  background-color: rgba(0, 0, 0, 0.95);
+  padding: 20px 40px;
+  @apply rounded-[10px];
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  @apply text-center;
+  @apply w-fit;
+}
+
+
 .share-popup-game-over.show {
   transform: translate(-50%, -50%) scale(1);
   @apply opacity-100;
-}
-
-.dark-mode .notification {
-  background-color: rgba(255, 255, 255, 0.8);
-  @apply text-black;
 }
 
 .dark-mode .share-popup-game-over {
@@ -54,16 +55,16 @@
 
 .share-popup-close {
   @apply absolute;
-  top: 5px;
-  right: 5px;
-  background: none;
-  border: none;
+  @apply top-[5px];
+  @apply right-[5px];
+  background: none; @apply bg-transparent;
+  border: none; @apply border-none;
   @apply text-inherit;
-  font-size: 1.5em;
+  @apply text-2xl;
   @apply cursor-pointer;
-  padding: 5px;
-  line-height: 0.8;
-  opacity: 0.7;
+  @apply p-[5px];
+  @apply leading-[0.8];
+  @apply opacity-70;
   transition: opacity 0.2s;
 }
 
