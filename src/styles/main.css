@@ -16,7 +16,7 @@ body {
   position: relative;
   font-family: var(--font-family);
   @apply flex;
-  flex-direction: column;
+  @apply flex-col;
   @apply items-center;
   background-color: var(--background-color-light);
   color: var(--text-color-light);
@@ -40,7 +40,7 @@ h3 {
 #main-container {
   @apply flex;
   width: 95%;
-  flex-direction: column;
+  @apply flex-col;
   @apply items-center;
   max-width: var(--content-max-width);
   margin: 0 auto;
@@ -48,7 +48,7 @@ h3 {
 
 .content-container {
   @apply flex;
-  flex-direction: column;
+  @apply flex-col;
   @apply items-center;
   @apply w-full;
   max-width: var(--content-max-width);

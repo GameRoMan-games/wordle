@@ -5,6 +5,7 @@
 
   /* --- Colors --- */
   color-scheme: light dark;
+
   --background-color-light: #f0f0f0;
   --text-color-light: #1a1a1a;
   --background-color-dark: #1a1a1a;
@@ -16,7 +17,7 @@
   --correct-color: #6aaa64;
   --present-color: #c9b458;
   --absent-color: #787c7e;
-  /* setting- */
+  /* Settings */
   --settings-background-color-light: #f9f9f9;
   --settings-background-color-dark: #2a2a2a;
   --setting-select-border-color: #ccc;
@@ -38,12 +39,14 @@
 
   /* --- Sizes --- */
   --game-title-font-size: min(34px, 8vw, 4vh);
+  --content-max-width: 450px;
   /* top-bar- */
   --top-bar-height: min(60px, 15vw, 8vh);
   --top-bar-margin-bottom: 20px;
   --top-bar-buttons-div-gap: min(10px, 3vw);
   --top-bar-button-size: min(30px, 8vw, 4vh);
   --top-bar-button-padding: min(4px, 1vw);
+  /* Settings */
   --settings-group-margin-bottom: min(15px, 4vw, 2vh);
   /* setting- */
   --setting-select-width: min(130px, 35vw);
@@ -60,12 +63,12 @@
   --key-size: min(40px, 8vw, 6vh);
   --key-font-size: min(24px, 6vw);
   --enter-key-font-size: min(32px, 8vw);
+  /* -- */
   --game-board-gap: min(5px, 1vw);
   --game-board-margin-bottom: 20px;
   --tile-width: min(60px, 15vw, 8vh);
   --tile-height: min(60px, 15vw, 8vh);
   --tile-font-size: min(32px, 8vw, 4vh);
-  --content-max-width: 450px;
   /* Stats */
   --stats-grid-gap: min(20px, 5vw);
   --stats-grid-margin-bottom: min(20px, 5vw);

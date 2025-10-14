@@ -15,7 +15,12 @@
   @apply w-fit;
 }
 
-.notification.game-over {
+.share-popup-game-over {
+  left: 50%;
+  color: var(--notification-color);
+  font-size: var(--notification-font-size);
+  @apply opacity-0;
+  transition: transform 0.3s, opacity 0.3s;
   @apply absolute;
   top: 50%;
   transform: translate(-50%, -50%) scale(0.8);
@@ -32,7 +37,7 @@
   @apply opacity-100;
 }
 
-.notification.game-over.show {
+.share-popup-game-over.show {
   transform: translate(-50%, -50%) scale(1);
 }
 
@@ -41,11 +46,11 @@
   @apply text-black;
 }
 
-.dark-mode .notification.game-over {
+.dark-mode .share-popup-game-over {
   background-color: rgba(255, 255, 255, 0.95);
 }
 
-.notification-close {
+.share-popup-close {
   @apply absolute;
   top: 5px;
   right: 5px;
@@ -60,6 +65,6 @@
   transition: opacity 0.2s;
 }
 
-.notification-close:hover {
+.share-popup-close:hover {
   @apply opacity-100;
 }
