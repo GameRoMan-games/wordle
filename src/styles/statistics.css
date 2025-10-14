@@ -10,7 +10,7 @@
 .stat-box {
   background-color: var(--key-background-color);
   border: 2px solid var(--tile-border-color);
-  border-radius: 5px;
+  @apply rounded-[5px];
   padding: var(--stat-box-padding);
   @apply text-center;
 }
