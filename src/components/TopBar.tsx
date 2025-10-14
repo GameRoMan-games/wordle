@@ -10,7 +10,7 @@ const TopbarButton = (props: {
   children: JSX.Element;
 }): JSX.Element => (
   <button
-    class="top-bar-button"
+    class="bg-none border-0 cursor-pointer p-1 flex items-center justify-center transition-transform duration-300 ease-in-out hover:scale-110"
     onClick={() => {
       if (props.currentSection === props.section) {
         props.setCurrentSection("game");
@@ -24,6 +24,7 @@ const TopbarButton = (props: {
       width="24"
       height="24"
       viewBox="0 0 24 24"
+      class="size-[30px] stroke-(--text-color-light) dark:stroke-(--text-color-dark)"
       fill="none"
       stroke="currentColor"
       stroke-width="2"
@@ -60,7 +61,7 @@ const TopBar = (props: {
       </TopbarButton>
     </div>
 
-    <h1 class="font-bold text-[2em] m-0 text-center tracking-[2px] grow font-courier">
+    <h1 class="font-bold text-[2em] m-0 text-center tracking-[2px] grow font-courier leading-none">
       Wordle
     </h1>
 

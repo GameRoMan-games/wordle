@@ -6,7 +6,9 @@ const GuessDistributionRow = (props: { v: number; i: number; p: number }) => (
     <div class="w-5 text-right mr-2.5 font-bold text-base">{props.i + 1}</div>
     <div class="guess-bar">
       <div class="guess-bar-fill" style={{ width: `${props.p}%` }} />
-      <div class="guess-count">{props.v}</div>
+      <div class="absolute right-[5px] top-1/2 font-bold text-base text-(--text-color-light) dark:text-(--text-color-dark) -translate-y-1/2">
+        {props.v}
+      </div>
     </div>
   </div>
 );
@@ -30,7 +32,7 @@ const StatBox = (props: {
   value: string | number;
   label: string;
 }) => (
-  <div class="stat-box">
+  <div class="bg-(--content-bg-light) dark:bg-(--background-color-dark) border-(--border-color-light) dark:border-(--text-color-dark) border-2 border-solid rounded-[5px] p-2.5 text-center">
     <div class="text-2xl font-bold mb-[5px]" id={props.id}>
       {props.value}
     </div>

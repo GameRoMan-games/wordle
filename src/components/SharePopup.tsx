@@ -1,5 +1,7 @@
 import { showNotification } from "~/lib/show-notification";
 
+import Button from "./ui/Button";
+
 const copyTextToClipboard = (text: string) =>
   navigator.clipboard
     .writeText(text)
@@ -14,27 +16,20 @@ function SharePopup(props: {
 }) {
   const popup = (
     <div class="share-popup-game-over">
-      <div
-        textContent={props.title}
-        style={{ "font-size": "1.5rem", "margin-bottom": "15px" }}
-      />
-      <pre
-        textContent={props.pattern}
-        style={{ "font-family": "monospace", margin: "15px 0" }}
-      />
-      <button
-        textContent="Share"
-        class="content-button"
-        style={{ margin: "10px 0" }}
-        onClick={() => copyTextToClipboard(props.shareText)}
-      />
       <button
         textContent="×"
-        class="share-popup-close"
+        class="absolute top-[5px] right-[5px] bg-transparent border-none text-inherit text-2xl cursor-pointer p-[5px] leading-[0.8] opacity-70 transition-opacity duration-200 hover:opacity-100"
         onClick={() => {
           popup.classList.remove("show");
           window.setTimeout(() => popup.remove(), 300);
         }}
+      />
+      <div textContent={props.title} class="text-2xl mb-[15px]" />
+      <pre textContent={props.pattern} class="my-[15px] mx-0 text-base" />
+      <Button
+        label="Share"
+        style={{ margin: "10px 0" }}
+        onClick={() => copyTextToClipboard(props.shareText)}
       />
     </div>
   ) as HTMLDivElement;
