@@ -2,8 +2,8 @@ import { For } from "solid-js";
 import type { Stats } from "~/types";
 
 const GuessDistributionRow = (props: { v: number; i: number; p: number }) => (
-  <div class="guess-row">
-    <div class="guess-label">{props.i + 1}</div>
+  <div class="flex items-center w-9/10">
+    <div class="w-5 text-right mr-2.5 font-bold text-base">{props.i + 1}</div>
     <div class="guess-bar">
       <div class="guess-bar-fill" style={{ width: `${props.p}%` }} />
       <div class="guess-count">{props.v}</div>
@@ -12,7 +12,7 @@ const GuessDistributionRow = (props: { v: number; i: number; p: number }) => (
 );
 
 const GuessDistribution = (props: { guessDistribution: number[] }) => (
-  <div id="guess-distribution">
+  <div class="flex flex-col gap-[5px] w-full">
     <For each={props.guessDistribution}>
       {(v, i) => (
         <GuessDistributionRow
@@ -25,43 +25,41 @@ const GuessDistribution = (props: { guessDistribution: number[] }) => (
   </div>
 );
 
+const StatBox = (props: {
+  id?: string;
+  value: string | number;
+  label: string;
+}) => (
+  <div class="stat-box">
+    <div class="text-2xl font-bold mb-[5px]" id={props.id}>
+      {props.value}
+    </div>
+    <div class="text-base">{props.label}</div>
+  </div>
+);
+
+const getNormalizedPercentage = (part: number, total: number) =>
+  total === 0 ? 0 : Math.round((part / total) * 100);
+
 const StatsContainer = (props: { stats: Stats }) => (
-  <div id="stats-container" class="content-container">
-    <div id="stats-grid">
-      <div class="stat-box">
-        <div class="stat-number" id="games-played">
-          {props.stats.gamesPlayed}
-        </div>
-        <div class="stat-label">Played</div>
-      </div>
+  <div class="content-container">
+    <div class="grid grid-cols-2 gap-5 mb-5">
+      <StatBox label="Played" value={props.stats.gamesPlayed} />
 
-      <div class="stat-box">
-        <div class="stat-number" id="win-percentage">
-          {props.stats.gamesPlayed === 0
-            ? "0%"
-            : Math.round(
-                (props.stats.gamesWon / props.stats.gamesPlayed) * 100
-              ) + "%"}
-        </div>
-        <div class="stat-label">Win %</div>
-      </div>
+      <StatBox
+        label="Win %"
+        value={`${getNormalizedPercentage(
+          props.stats.gamesWon,
+          props.stats.gamesPlayed
+        )}%`}
+      />
 
-      <div class="stat-box">
-        <div class="stat-number" id="current-streak">
-          {props.stats.currentStreak}
-        </div>
-        <div class="stat-label">Current Streak</div>
-      </div>
+      <StatBox label="Current Streak" value={props.stats.currentStreak} />
 
-      <div class="stat-box">
-        <div class="stat-number" id="max-streak">
-          {props.stats.maxStreak}
-        </div>
-        <div class="stat-label">Max Streak</div>
-      </div>
+      <StatBox label="Max Streak" value={props.stats.maxStreak} />
     </div>
 
-    <h3 class="my-[10px]">Guess Distribution</h3>
+    <h3 class="font-bold text-lg text-center my-2.5">Guess Distribution</h3>
 
     <GuessDistribution guessDistribution={props.stats.guessDistribution} />
   </div>

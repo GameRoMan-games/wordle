@@ -40,7 +40,7 @@ const TopBar = (props: {
   setCurrentSection: (section: CurrentSection) => void;
 }) => (
   <div id="top-bar">
-    <div class="top-bar-buttons-div">
+    <div class="flex flex-row gap-2.5 basis-1/3">
       <TopbarButton
         section="menu"
         currentSection={props.currentSection}
@@ -60,9 +60,9 @@ const TopBar = (props: {
       </TopbarButton>
     </div>
 
-    <h1 id="game-title">Wordle</h1>
+    <h1 id="game-title" class="font-bold text-[2em] m-0 text-center tracking-[2px] grow">Wordle</h1>
 
-    <div class="top-bar-buttons-div">
+    <div class="flex flex-row gap-2.5 basis-1/3 justify-end">
       <TopbarButton
         section="stats"
         currentSection={props.currentSection}

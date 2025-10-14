@@ -7,8 +7,8 @@ const SettingGroup = <T extends string>(props: {
   options: { value: T; label: string }[];
   onChange: (value: T) => void;
 }) => (
-  <div class="setting-group">
-    <label for={props.id} class="setting-label">
+  <div class="flex justify-between items-end w-full mb-4">
+    <label for={props.id} class="font-bold text-2xl">
       {props.label}
     </label>
 
@@ -29,7 +29,7 @@ const SettingsContainer = (props: {
   settings: Settings;
   updateSettings: (settings: Partial<Settings>) => void;
 }) => (
-  <div id="settings-container" class="content-container">
+  <div class="content-container">
     <SettingGroup
       id="theme-select"
       label="Theme"
