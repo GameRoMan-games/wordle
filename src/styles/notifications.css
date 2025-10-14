@@ -39,6 +39,7 @@
 
 .share-popup-game-over.show {
   transform: translate(-50%, -50%) scale(1);
+  @apply opacity-100;
 }
 
 .dark-mode .notification {
@@ -48,6 +49,7 @@
 
 .dark-mode .share-popup-game-over {
   background-color: rgba(255, 255, 255, 0.95);
+  @apply text-black;
 }
 
 .share-popup-close {
