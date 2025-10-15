@@ -59,6 +59,73 @@
   --animation-shake-duration: 0.5s;
 }
 
+@theme {
+  --animate-pop: pop var(--animation-pop-duration)
+    cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+  @keyframes pop {
+    0% {
+      transform: scale(1);
+    }
+
+    50% {
+      transform: scale(1.1);
+    }
+
+    100% {
+      transform: scale(1);
+    }
+  }
+}
+
+@theme {
+  --animate-flip: flip var(--animation-flip-duration) ease;
+
+  @keyframes flip {
+    0% {
+      transform: rotateX(0);
+    }
+
+    50% {
+      transform: rotateX(90deg);
+    }
+
+    100% {
+      transform: rotateX(0);
+    }
+  }
+}
+
+@theme {
+  --animate-shake: shake var(--animation-shake-duration) ease-in-out;
+
+  @keyframes shake {
+    0% {
+      transform: translateX(0);
+    }
+
+    20% {
+      transform: translateX(-5px);
+    }
+
+    40% {
+      transform: translateX(5px);
+    }
+
+    60% {
+      transform: translateX(-5px);
+    }
+
+    80% {
+      transform: translateX(5px);
+    }
+
+    100% {
+      transform: translateX(0);
+    }
+  }
+}
+
 body {
   font-family: var(--font-family);
   @apply relative;
@@ -128,72 +195,6 @@ body {
 
 .tile.shake {
   @apply animate-shake;
-}
-
-@theme {
-  --animate-pop: pop var(--animation-pop-duration) cubic-bezier(0.68, -0.55, 0.265, 1.55);
-
-  @keyframes pop {
-    0% {
-      transform: scale(1);
-    }
-
-    50% {
-      transform: scale(1.1);
-    }
-
-    100% {
-      transform: scale(1);
-    }
-  }
-}
-
-@theme {
-  --animate-flip: flip var(--animation-flip-duration) ease;
-
-  @keyframes flip {
-    0% {
-      transform: rotateX(0);
-    }
-
-    50% {
-      transform: rotateX(90deg);
-    }
-
-    100% {
-      transform: rotateX(0);
-    }
-  }
-}
-
-@theme {
-  --animate-shake: shake var(--animation-shake-duration) ease-in-out;
-
-  @keyframes shake {
-    0% {
-      transform: translateX(0);
-    }
-
-    20% {
-      transform: translateX(-5px);
-    }
-
-    40% {
-      transform: translateX(5px);
-    }
-
-    60% {
-      transform: translateX(-5px);
-    }
-
-    80% {
-      transform: translateX(5px);
-    }
-
-    100% {
-      transform: translateX(0);
-    }
-  }
 }
 
 :root {

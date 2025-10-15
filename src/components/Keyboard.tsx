@@ -134,7 +134,7 @@ const Keyboard = (props: {
     getKeysArray(props.settings, props.handleBoardAction, props.keycolors);
 
   return (
-    <div id="keyboard" class="grid grid-cols-10 gap-[5px]">
+    <div class="grid grid-cols-10 gap-(--keyboard-gap)">
       <For each={keysArray()}>{(key) => key}</For>
     </div>
   );
