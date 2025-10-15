@@ -115,73 +115,84 @@ body {
   @apply text-[2em];
   @apply font-bold;
   @apply uppercase;
-  transition: transform 0.3s ease, background-color 0.3s ease;
+  @apply transition duration-300 ease-[ease];
 }
 
 .tile.pop {
-  animation: popIn var(--animation-pop-duration)
-    cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  @apply animate-pop;
 }
 
 .tile.flip {
-  animation: flipIn var(--animation-flip-duration) ease;
+  @apply animate-flip;
 }
 
 .tile.shake {
-  animation: shakeAnimation var(--animation-shake-duration) ease-in-out;
+  @apply animate-shake;
 }
 
-@keyframes popIn {
-  0% {
-    transform: scale(1);
-  }
+@theme {
+  --animate-pop: pop var(--animation-pop-duration) cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
-  50% {
-    transform: scale(1.1);
-  }
+  @keyframes pop {
+    0% {
+      transform: scale(1);
+    }
 
-  100% {
-    transform: scale(1);
-  }
-}
+    50% {
+      transform: scale(1.1);
+    }
 
-@keyframes flipIn {
-  0% {
-    transform: rotateX(0);
-  }
-
-  50% {
-    transform: rotateX(90deg);
-  }
-
-  100% {
-    transform: rotateX(0);
+    100% {
+      transform: scale(1);
+    }
   }
 }
 
-@keyframes shakeAnimation {
-  0% {
-    transform: translateX(0);
-  }
+@theme {
+  --animate-flip: flip var(--animation-flip-duration) ease;
 
-  20% {
-    transform: translateX(-5px);
-  }
+  @keyframes flip {
+    0% {
+      transform: rotateX(0);
+    }
 
-  40% {
-    transform: translateX(5px);
-  }
+    50% {
+      transform: rotateX(90deg);
+    }
 
-  60% {
-    transform: translateX(-5px);
+    100% {
+      transform: rotateX(0);
+    }
   }
+}
 
-  80% {
-    transform: translateX(5px);
-  }
+@theme {
+  --animate-shake: shake var(--animation-shake-duration) ease-in-out;
 
-  100% {
-    transform: translateX(0);
+  @keyframes shake {
+    0% {
+      transform: translateX(0);
+    }
+
+    20% {
+      transform: translateX(-5px);
+    }
+
+    40% {
+      transform: translateX(5px);
+    }
+
+    60% {
+      transform: translateX(-5px);
+    }
+
+    80% {
+      transform: translateX(5px);
+    }
+
+    100% {
+      transform: translateX(0);
+    }
   }
 }
 
@@ -191,7 +202,7 @@ body {
 }
 
 #keyboard {
-  gap: var(--keyboard-gap);
+  @apply gap-(--keyboard-gap);
 }
 
 .key {
@@ -201,8 +212,7 @@ body {
   @apply text-2xl;
   @apply font-bold;
   @apply cursor-pointer;
-  width: var(--key-size);
-  height: var(--key-size);
+  @apply size-(--key-size);
   @apply p-0;
 }
 
@@ -254,7 +264,6 @@ body {
   @apply h-full;
   @apply rounded-sm;
   background-color: var(--correct-color);
-  transition: width 0.5s ease-in-out;
 }
 
 .notification {
@@ -268,12 +277,13 @@ body {
   @apply text-[1.2em];
   @apply opacity-0;
   @apply w-fit;
-  transform: translateX(-50%) translateY(-100%);
   transition: transform 0.3s, opacity 0.3s;
+  transform: translateX(-50%) translateY(-100%);
 }
 
 .notification.show {
-  @apply opacity-100 -translate-x-1/2 translate-y-0;
+  @apply opacity-100;
+  transform: translateX(-50%) translateY(0);
 }
 
 .share-popup-game-over {
