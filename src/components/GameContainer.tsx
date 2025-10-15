@@ -16,7 +16,7 @@ const GameContainer = (props: {
 
   startNewGame: () => void;
 }) => (
-  <div id="game-container" class="content-container">
+  <div class="content-container">
     <GameBoard tiles={props.tiles} />
 
     <Show when={props.state === "playing"}>
