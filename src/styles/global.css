@@ -33,9 +33,6 @@
   /* content- */
   --content-bg-light: #d6d6d6;
   --content-bg-dark: #3a3a3a;
-
-  --content-hover-bg-light: #bbb;
-  --content-hover-bg-dark: #4a4a4a;
 }
 
 :root {
@@ -137,7 +134,7 @@ body {
   @apply cursor-default;
   @apply m-0;
   @apply p-0;
-  transition: background-color 0.3s, color 0.3s;
+  @apply transition-colors duration-300;
 }
 
 #main-container {
@@ -202,14 +199,10 @@ body {
   --key-size: min(40px, 8vw, 6vh);
 }
 
-#keyboard {
-  @apply gap-(--keyboard-gap);
-}
-
 .key {
   @apply text-black;
   @apply border-0;
-  @apply bg-(--content-bg-light) hover:bg-(--content-hover-bg-light);
+  @apply bg-(--content-bg-light) hover:bg-[#bbb];
   @apply text-2xl;
   @apply font-bold;
   @apply cursor-pointer;
@@ -217,21 +210,18 @@ body {
   @apply p-0;
 }
 
-.correct,
-.present,
-.absent {
-  color: white;
-}
-
 .correct {
+  @apply text-white;
   background-color: var(--correct-color);
 }
 
 .present {
+  @apply text-white;
   background-color: var(--present-color);
 }
 
 .absent {
+  @apply text-white;
   background-color: var(--absent-color);
 }
 
